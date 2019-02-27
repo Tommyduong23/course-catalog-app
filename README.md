@@ -1,39 +1,27 @@
-# vue3-template
+# The Spacebar Template
 
-## Project setup
-```
-npm install
-```
+To start your new project, follow these steps
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+#### 1. Clone this repository
 
-### Compiles and minifies for production
-```
-npm run build
-```
+``` git clone https://github.com/SpacebarTech/template.git ```
 
-### Run your tests
-```
-npm run test
-```
+#### 2. Install all the packages
 
-### Lints and fixes files
-```
-npm run lint
-```
+``` npm install ```
 
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
+#### 3. Create a new repository for your project
 
-### Run your unit tests
-```
-npm run test:unit
-```
+Do this on github, or send Tim a request to have it done.
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+#### 4. Remove template.git from your project
+
+``` git remote remove origin ```
+
+#### 5. Add your repository to your project
+
+``` git remote add origin https://github.com/SpacebarTech/[YOUR_PROJECT].git ```
+
+#### 6. Update your package.json so that all fields are filled out correctly
+
+In your package.json, make sure that "name," "description," "repository," "bugs," and "homepage" are all the correct values for your repository, and not for template.git

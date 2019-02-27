@@ -22,3 +22,11 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# To keep an empty private dir
+private
+!private/.gitkeep
+
+src/lib/db/conf.js
+
+src/assets/env
