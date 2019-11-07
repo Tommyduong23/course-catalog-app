@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import HelloWorld from '@/components/HelloWorld';
+import Courses from '@/components/Courses';
+import Cte from '@/components/Cte';
 
 Vue.use( Router );
 
@@ -10,10 +11,25 @@ export default new Router( {
 	base   : process.env.BASE_URL,
 	routes : [
 		{
-			path      : '/',
-			name      : 'home',
-			component : HelloWorld,
-			props     : { msg : 'Hello World' }
+			path     : '/',
+			redirect : '/courses',
+			props    : { view : 'courses' }
 		},
+		{
+			path      : '/courses',
+			name      : 'Courses',
+			component : Courses,
+		},
+		{
+			path      : '/cte',
+			name      : 'CTE',
+			component : Cte,
+		},
+		{
+			path      : '/saved',
+			name      : 'Saved',
+			component : Courses,
+			props     : { view : 'saved' }
+		}
 	],
 } );

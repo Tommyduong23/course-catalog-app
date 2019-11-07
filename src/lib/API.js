@@ -78,3 +78,36 @@ const _body = async ( res ) => {
 
 	return text;
 };
+
+export const Upload = authenticate( _auth => new Promise( ( resolve, reject ) => {
+
+	fetchPromise( path( 'sheets/upload' ), {
+		method  : 'POST',
+		headers : new Headers( {
+			'Auth-Token'   : _auth.token,
+			'Content-Type' : 'application/json'
+		} ),
+	} )
+		.then( ( data ) => {
+
+			if ( data.status === 500 ) {
+				return reject( data );
+			}
+
+			return resolve( data );
+		} )
+		.catch( reject );
+
+} ) );
+
+export const Search = query => new Promise( ( resolve ) => {
+
+	fetchPromise( path( `search/${query}` ), {
+		method : 'GET',
+		header : new Headers( {
+			'Content-Type' : 'application/json'
+		} )
+	} )
+		.then( resolve );
+
+} );

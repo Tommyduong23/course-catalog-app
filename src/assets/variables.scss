@@ -1,14 +1,29 @@
-$defaultBoxShadow   : 0px 1px 2px rgba(0,0,0,0.12), 0px 1px 5px 2px rgba(0,0,0,0.25);
-$secondaryBoxShadow : 0px 1px 4px rgba(0,0,0,0.08), 0px 1px 2px rgba(0,0,0,0.12);
+/* ---------- GREY SCALE ---------- */
 
-// Small devices (landscape phones, 576px and up)
-$mobile : 575px;
+$lightGrey     : #e3e3e3;
+$grey          : #646971;
 
-// Medium devices (tablets, 768px and up)
-$tablet : 767px;
+/*--------- SITE STYLES ---------- */
 
-// Large devices (desktops, 992px and up)
-$desktop : 991px;
+$backgroundColor : #fafafa;
+$defaultTextColor: #4a4a4a;
 
-// Extra large devices (large desktops, 1700px and up)
-$largeDesktop : 1700px;
+$primary   : #2E5491;
+$secondary : #D0D6E0;
+
+$primaryAccent : #6c95d5;
+
+/* Course Catalog Specific Colors -- */
+$confirm : #09B038;
+$cancel  : #E05252;
+$warning : #D79B29;
+
+/* Box Shadow */
+
+$floatingObject : 0px 0px 30px rgba(0,0,0,0.1), 0px 1px 4px rgba(0,0,0,0.2);
+
+/* ------- SOCIAL MEDIA ------- */
+
+$googleRed    : #ff5858;
+$facebookBlue : #4267b2;
+$twitterBlue  : #1da1f2;
