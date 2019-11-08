@@ -42,20 +42,8 @@ export default {
 			default : null
 		},
 
-		courseModel : {
+		model : {
 			default : () => {},
-		},
-
-		titleKey : {
-			default : '',
-		},
-
-		descriptionKey : {
-			default : '',
-		},
-
-		tagKeys : {
-			default : []
 		},
 
 	},
@@ -68,7 +56,7 @@ export default {
 
 		schoolsArray() {
 
-			const card = this.card;
+			const { card } = this;
 
 			if ( !card || !card.schools ) {
 				return [];
@@ -84,14 +72,20 @@ export default {
 			return this.schoolsArray.slice( 0, 6 );
 		},
 
+		titleKey() {
+			return this.model.title;
+		},
+
+		descriptionKey() {
+			return this.model.description;
+		},
+
 		tags() {
-			const { courseModel, tagKeys, card } = this;
+			const { model, card } = this;
+			const tagKeys = model.tags || [];
 
 			const tags = [];
-			tagKeys.forEach( ( key, i ) => {
-				const model = courseModel[key];
-				const { type } = model;
-
+			tagKeys.forEach( ( { type, key }, i ) => {
 				const tag = {
 					style : {
 						filter : `hue-rotate(${i * 50}deg)`

@@ -37,11 +37,7 @@ export default new Vuex.Store( {
 
 		courses         : [],
 		courseState     : 'loading',
-		courseModel     : {},
-		titleKey        : '',
-		descriptionKey  : '',
-		primaryKey      : '',
-		uniqueKey       : '',
+		model           : {},
 		filters         : [],
 		openedFilters   : {},
 		selectedFilters : {},
@@ -137,20 +133,8 @@ export default new Vuex.Store( {
 
 		},
 
-		updateCourseModel( state, payload ) {
-			const {
-				courseModel,
-				uniqueKey,
-				primaryKey,
-				titleKey,
-				descriptionKey
-			} = payload;
-
-			state.courseModel    = courseModel;
-			state.uniqueKey      = uniqueKey;
-			state.primaryKey     = primaryKey;
-			state.titleKey       = titleKey;
-			state.descriptionKey = descriptionKey;
+		updateModel( state, model ) {
+			state.model = model;
 		},
 
 		updateOpened( state, payload ) {
@@ -339,31 +323,11 @@ export default new Vuex.Store( {
 					commit( 'updateFilters', filters );
 				} );
 
-			Ref
-				.child( 'courseModel' )
+			Ref.child( 'model' )
 				.on( 'value', ( snapshot ) => {
-					const courseModel = snapshot.val();
+					const model = snapshot.val();
 
-					if ( !courseModel ) {
-						return;
-					}
-
-					const modelArray = ObjToArray( courseModel );
-
-					const primary     = modelArray.find( model => model['Primary Filter'] === true );
-					const title       = modelArray.find( model => model.Title === true );
-					const description = modelArray.find( model => model.Description === true );
-					const unique      = modelArray.find( model => model['Unique Key'] === true );
-
-					const payload = {
-						courseModel,
-						primaryKey     : primary.Label,
-						titleKey       : title.Label,
-						descriptionKey : description.Label,
-						uniqueKey      : unique.Label
-					};
-
-					commit( 'updateCourseModel', payload );
+					commit( 'updateModel', model );
 				} );
 
 			Ref

@@ -12,10 +12,7 @@
 				v-for='course in displayedCourses'
 				:key='course.key'
 				:card='course'
-				:course-model='courseModel'
-				:title-key='titleKey'
-				:description-key='descriptionKey'
-				:tag-keys='tagKeys'
+				:model='model'
 				:saved='savedCourseKeys.hasOwnProperty( course.key )'
 				@view='viewCourse( course.key )'
 				@save='saveCourse'
@@ -60,16 +57,8 @@ export default {
 			return this.$store.state.courses;
 		},
 
-		courseModel() {
-			return this.$store.state.courseModel;
-		},
-
-		titleKey() {
-			return this.$store.state.titleKey;
-		},
-
-		descriptionKey() {
-			return this.$store.state.descriptionKey;
+		model() {
+			return this.$store.state.model;
 		},
 
 		searchResults() {
@@ -78,15 +67,6 @@ export default {
 
 		savedCourseKeys() {
 			return this.$store.state.savedCourseKeys;
-		},
-
-		tagKeys() {
-			const modelArray = ObjToArray( this.courseModel );
-
-			const tagProperties = modelArray.filter( a => a['Show as Tag'] );
-
-			return tagProperties.map( a => a.Label );
-
 		},
 
 		subjectMap() {
@@ -105,7 +85,7 @@ export default {
 			const filteredCourses = [];
 			const { filters, selectedFilters, savedCourseKeys, view } = this;
 
-			if ( !filters.length || !Object.keys( this.courseModel ).length ) {
+			if ( !filters.length || !Object.keys( this.model ).length ) {
 				return [];
 			}
 
@@ -118,6 +98,8 @@ export default {
 				return this.courses;
 
 			} )();
+
+			return courses;
 
 			// Filter by subjects
 			courses.forEach( ( course, i ) => {
@@ -137,7 +119,7 @@ export default {
 					// because a filter type can be boolean but the courseModel
 					// type is arbitrary. Arbitrary types with boolean filters
 					// just check if the course has a value for that property
-					const { type } = this.courseModel[name];
+					const { type } = this.model[name];
 
 					const filterCondition = selectedFilters[name];
 

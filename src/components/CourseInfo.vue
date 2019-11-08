@@ -79,37 +79,36 @@ export default {
 			return this.$store.state.courseInfoState;
 		},
 
-		titleKey() {
-			return this.$store.state.titleKey;
-		},
-
-		descriptionKey() {
-			return this.$store.state.descriptionKey;
+		model() {
+			return this.$store.state.model;
 		},
 
 		uniqueKey() {
-			return this.$store.state.uniqueKey;
+			return this.model.uniqueKey;
 		},
 
-		courseModel() {
-			return this.$store.state.courseModel;
+		titleKey() {
+			return this.model.title;
+		},
+
+		descriptionKey() {
+			return this.model.description;
 		},
 
 		facts() {
 			const { course } = this;
-			const modelArray = ObjToArray( this.courseModel );
+			const { quickFacts } = this.model;
 
-			const factModels = modelArray.filter( model => model['Show In Quick Facts'] === true );
+			if ( !quickFacts ) {
+				return [];
+			}
 
-			factModels.sort( ( a, b ) => { return a.order - b.order } )
-			const facts = factModels.map( ( model ) => {
-				const { type, Label } = model;
-
+			const facts = quickFacts.map( ( { type, key } ) => {
 				return {
 					type,
-					label : Label,
-					value : course[Label]
-				}
+					label : key,
+					value : course[key]
+				};
 			} );
 
 			return facts;

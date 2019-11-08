@@ -22,7 +22,7 @@
 						:class='{ active : school.key === activeSchoolKey }'
 						@click='activeSchoolKey = school.key'
 					)
-						| {{ school.name }}
+						| {{ school.value }}
 
 		.page
 			//- loading animation
@@ -66,7 +66,7 @@ export default {
 
 			const schools = ObjToArray( this.$store.state.schools );
 
-			return schools.filter( a => a.showInMenu );
+			return schools;
 
 		},
 
@@ -151,7 +151,8 @@ export default {
 		Sectors,
 		AddSectorModal
 	}
-}
+};
+
 </script>
 
 <style lang="scss">
