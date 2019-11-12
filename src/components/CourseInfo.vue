@@ -35,10 +35,10 @@
 						.fact(v-for='fact in facts' v-if='fact.value')
 							.content(v-if='fact.type == "boolean"')
 								span.bold {{ fact.label }} course
-							.content(v-if='fact.type == "multi-list-item"')
+							.content(v-if='fact.type == "abv-list"')
 								span.bold {{ fact.label }}:
-								p(v-for='v in fact.value' ) {{ v.name }}
-							.content(v-if='fact.type == "list-item"')
+								p(v-for='v in fact.value' ) {{ v.value }}
+							.content(v-if='fact.type == "list"')
 								span.bold {{ fact.label }}:
 								span {{ fact.value }}
 							.content(v-if='fact.type == "arbitrary"')

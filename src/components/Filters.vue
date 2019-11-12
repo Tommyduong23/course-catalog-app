@@ -3,30 +3,25 @@
 		.filters.noselect(ref='filters')
 			.filter(v-for='filter in filters' :class='filter.class')
 				.dropdown-menu(
-					v-if='filter.type == "list-item" || filter.type == "multi-list-item"'
-					:class='{ opened : openedFilters[filter.name], hidden : filter.name === primaryKey}'
-					@click='setOpened( filter.name, !openedFilters[filter.name] )'
-					@mouseleave='setOpened( filter.name, false )'
+					v-if='filter.type == "list" || filter.type == "abv-list"'
+					:class='{ opened : openedFilters[filter.key], hidden : filter.key === primaryKey}'
+					@click='setOpened( filter.key, !openedFilters[filter.key] )'
+					@mouseleave='setOpened( filter.key, false )'
 				)
-					p {{ filter.name }}
+					p {{ filter.key }}
 					.arrow
 					.options(
-						:ref='filter.name'
-						:class='optionsClasses[filter.name]'
+						:ref='filter.key'
+						:class='optionsClasses[filter.key]'
 					)
 						.option(
-							:class='{ active : selectedFilters[filter.name] == "All" }'
-							@click.stop='toggleOption( filter, filter.default )'
-						)
-							p {{ filter.default.name }}
-						.option(
 							v-for='option in filter.options'
-							:class='{ active : selectedFilters[filter.name] == option.value }'
+							:class='{ active : selectedFilters[filter.key] == option.value }'
 							@click.stop='toggleOption( filter, option )'
 						)
-							p {{ option.name }}
-				.boolean(v-if='filter.type == "boolean"' :class='{ active : selectedFilters[filter.name] }' @click='toggleBoolean( filter )')
-					p {{ filter.name }}
+							p {{ option.value }}
+				.boolean(v-if='filter.type == "boolean"' :class='{ active : selectedFilters[filter.key] }' @click='toggleBoolean( filter )')
+					p {{ filter.key }}
 </template>
 
 <script>
@@ -48,7 +43,7 @@ export default {
 			return this.$store.state.openedFilters;
 		},
 		primaryKey() {
-			return this.$store.state.primaryKey;
+			return this.$store.state.model.primaryFilter;
 		}
 	},
 
@@ -64,18 +59,18 @@ export default {
 
 				const leftBound = this.$refs.filters.getBoundingClientRect().left;
 
-				const listFilters = filters.filter( a => a.type === 'list-item' || a.type === 'multi-list-item' )
+				const listFilters = filters.filter( a => a.type === 'list' || a.type === 'abv-list' );
 
 				listFilters.forEach( ( filter ) => {
-					const { name } = filter;
+					const { key } = filter;
 
-					const elBounds = this.$refs[name][0].getBoundingClientRect();
+					const elBounds = this.$refs[key][0].getBoundingClientRect();
 
 					const { width } = elBounds;
 					const { left }  = elBounds;
 
 					if ( left - width / 2 < leftBound ) {
-						this.optionsClasses[name] = 'left';
+						this.optionsClasses[key] = 'left';
 					}
 
 				} );
@@ -88,8 +83,8 @@ export default {
 	methods : {
 
 		position( filter ) {
-			const { name } = filter;
-			const ref = this.$refs[name];
+			const { key } = filter;
+			const ref = this.$refs[key];
 
 			if ( !ref ) {
 				return '';
@@ -117,10 +112,10 @@ export default {
 
 		toggleOption( filter, option ) {
 			const { value } = option;
-			const { name } = filter;
+			const { key } = filter;
 
 			const payload = {
-				name,
+				key,
 				value,
 			};
 
@@ -128,26 +123,25 @@ export default {
 		},
 
 		toggleBoolean( filter ) {
-			const { name } = filter;
+			const { key } = filter;
 
 			const payload = {
-				name,
-				value : !this.selectedFilters[name]
-			}
+				key,
+				value : !this.selectedFilters[key]
+			};
 
 			this.$store.dispatch( 'selectFilter', payload );
 		},
 
-		setOpened( name, value ) {
+		setOpened( key, value ) {
 			const payload = {
-				name,
+				key,
 				value
-			}
-			this.$store.dispatch( 'updateOpened', payload )
+			};
+			this.$store.dispatch( 'updateOpened', payload );
 		}
 	},
-
-}
+};
 </script>
 
 <style lang="scss">

@@ -82,21 +82,34 @@ export default new Vuex.Store( {
 		},
 
 		updateFilters( state, filters ) {
+			const formattedFilters = filters.map( ( filter ) => {
+				const { type } = filter;
 
-			const selectedFilters = filters.reduce( ( obj, filter ) => {
-				const { name, type } = filter;
+				if ( type === 'list' ) {
+					filter.options = [{ value : 'All' }].concat( filter.options );
+				}
+
+				if ( type === 'abv-list' ) {
+					filter.options = [{ abv : 'All', value : 'All' }].concat( filter.options );
+				}
+
+				return filter;
+			} );
+
+			const selectedFilters = formattedFilters.reduce( ( obj, filter ) => {
+				const { key, type } = filter;
 
 				switch ( type ) {
 					case 'boolean':
-						obj[name] = false;
+						obj[key] = false;
 						break;
 
-					case 'list-item':
-						obj[name] = filter.default.name;
+					case 'list':
+						obj[key] = filter.options[0].value;
 						break;
 
-					case 'multi-list-item':
-						obj[name] = filter.default.name;
+					case 'abv-list':
+						obj[key] = filter.options[0].value;
 						break;
 
 					default:
@@ -104,16 +117,14 @@ export default new Vuex.Store( {
 				}
 
 				return obj;
-
 			}, {} );
 
 
 			const openedFilters = filters.reduce( ( obj, filter ) => {
-
-				const { name, type } = filter;
+				const { key, type } = filter;
 
 				if ( type !== 'boolean' ) {
-					obj[name] = false;
+					obj[key] = false;
 				}
 
 				return obj;
@@ -121,7 +132,7 @@ export default new Vuex.Store( {
 
 			state.selectedFilters = selectedFilters;
 			state.openedFilters   = openedFilters;
-			state.filters         = filters.sort( ( filter ) => {
+			state.filters         = formattedFilters.sort( ( filter ) => {
 				const { type } = filter;
 
 				if ( type === 'boolean' ) {
@@ -138,14 +149,14 @@ export default new Vuex.Store( {
 		},
 
 		updateOpened( state, payload ) {
-			const { name, value } = payload;
+			const { key, value } = payload;
 
-			state.openedFilters[name] = value;
+			state.openedFilters[key] = value;
 		},
 
 		selectFilter( state, payload ) {
-			const { name, value } = payload;
-			state.selectedFilters[name] = value;
+			const { key, value } = payload;
+			state.selectedFilters[key] = value;
 		},
 
 		uploadFail( state, errors ) {
@@ -311,23 +322,24 @@ export default new Vuex.Store( {
 					commit( 'updateStore', ['courseState', 'loaded'] );
 				} );
 
-			Ref
-				.child( 'filters' )
-				.on( 'value', ( snapshot ) => {
-					const filters = snapshot.val();
+			// Ref
+			// 	.child( 'filters' )
+			// 	.on( 'value', ( snapshot ) => {
+			// 		const filters = snapshot.val();
 
-					if ( !filters ) {
-						return;
-					}
+			// 		if ( !filters ) {
+			// 			return;
+			// 		}
 
-					commit( 'updateFilters', filters );
-				} );
+			// 		commit( 'updateFilters', filters );
+			// 	} );
 
 			Ref.child( 'model' )
 				.on( 'value', ( snapshot ) => {
 					const model = snapshot.val();
 
 					commit( 'updateModel', model );
+					commit( 'updateFilters', model.filterable );
 				} );
 
 			Ref

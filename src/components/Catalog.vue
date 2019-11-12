@@ -41,7 +41,7 @@ export default {
 	},
 
 	data : () => ( {
-		maxVisible      : 50,
+		maxVisible : 50,
 	} ),
 
 	computed : {

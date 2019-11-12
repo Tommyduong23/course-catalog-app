@@ -8,7 +8,7 @@
 				v-for='filter in filtersPreview'
 			)
 				.text
-					p(v-if='filter.type === "list-item" || filter.type === "multi-list-item"') {{ filter.name }}: {{ filter.value }}
+					p(v-if='filter.type === "list" || filter.type === "abv-list"') {{ filter.value }}: {{ filter.value }}
 					p(v-else-if='filter.type === "boolean"') {{ filter.name }} only
 				.icon-close(@click='clearFilter( filter )')
 			.clear-all(v-if='filtersPreview.length > 1' @click='resetFilters') Clear All
@@ -41,11 +41,11 @@ export default {
 			const filterKeys          = Object.keys( selectedFilters );
 
 			if ( !this.filters.length ) {
-				return {}
+				return {};
 			}
 
 			const filters = this.filters.reduce( ( obj, filter ) => {
-				obj[filter.name] = filter; // eslint-disable-line
+				obj[filter.key] = filter; // eslint-disable-line
 
 				return obj;
 			}, {} );
@@ -54,8 +54,7 @@ export default {
 				const filter = filters[key];
 				const { type } = filter;
 
-				switch( type ) {
-
+				switch ( type ) {
 					case 'list-item':
 						if ( filter.default.value === selectedFilters[key] ) {
 							return false;
@@ -73,6 +72,9 @@ export default {
 							return false;
 						}
 						break;
+
+					default:
+						break;
 				}
 
 				return true;
@@ -87,15 +89,15 @@ export default {
 					let option;
 					const selected = this.selectedFilters[key];
 
-					switch( type ) {
-						case 'list-item':
+					switch ( type ) {
+						case 'list':
 							option = filter.options.find( a => a.value === selected );
-							v = option.name;
+							v = option.value;
 							break;
 
-						case 'multi-list-item':
+						case 'abv-list':
 							option = filter.options.find( a => a.value === selected );
-							v = option.name;
+							v = option.value;
 							break;
 
 						case 'boolean':
@@ -107,10 +109,9 @@ export default {
 							console.error( `UNEXPECTED TYPE: ${type} FOUND. EXPECTED 'boolean' OR 'dropdown'. UNABLE TO CREATE PREVIEW FOR THIS FILTER` );
 							v = {};
 							break;
-					};
+					}
 
 					return v;
-
 				} )();
 
 				return appliedFilters.concat( [{
@@ -126,16 +127,16 @@ export default {
 
 	methods : {
 		clearFilter( filterToClear ) {
-			const { type, name } = filterToClear;
+			const { type, key } = filterToClear;
 			let payload;
 			let filter;
 			let defaultVal;
 
 			switch ( type ) {
 
-				case 'boolean' :
-				 	payload = {
-						name,
+				case 'boolean':
+					payload = {
+						key,
 						value : false,
 					};
 
@@ -143,12 +144,12 @@ export default {
 
 					break;
 
-				case 'list-item' :
-					filter     = this.filters.find( a => a.name === name );
-					defaultVal = filter.default.value;
+				case 'list':
+					filter     = this.filters.find( a => a.key === key );
+					defaultVal = filter.options[0].value;
 
 					payload = {
-						name,
+						key,
 						value : defaultVal
 					};
 
@@ -156,19 +157,19 @@ export default {
 
 					break;
 
-				case 'multi-list-item':
-					filter     = this.filters.find( a => a.name === name );
-					defaultVal = filter.default.value;
+				case 'abv-list':
+					filter     = this.filters.find( a => a.key === key );
+					defaultVal = filter.options[0].value;
 
 					payload = {
-						name,
+						key,
 						value : defaultVal
 					};
 
 					this.$store.dispatch( 'selectFilter', payload );
 					break;
 
-				default :
+				default:
 					break;
 			}
 		},
@@ -176,13 +177,13 @@ export default {
 		resetFilters() {
 			// reset each filter
 			this.filters.forEach( ( filter ) => {
-				const { name, type } = filter;
+				const { key, type } = filter;
 
 				switch ( type ) {
 
-					case 'boolean' : {
+					case 'boolean': {
 						const payload = {
-							name,
+							key,
 							value : false,
 						};
 
@@ -191,12 +192,10 @@ export default {
 						break;
 					}
 
-					case 'list-item' : {
-						const filter     = this.filters.find( a => a.name === name );
-						const defaultVal = filter.default.value;
-
+					case 'list': {
+						const defaultVal = filter.options[0].value;
 						const payload = {
-							name,
+							key,
 							value : defaultVal
 						};
 
@@ -205,12 +204,11 @@ export default {
 						break;
 					}
 
-					case 'multi-list-item' : {
-						const filter     = this.filters.find( a => a.name === name );
+					case 'abv-list': {
 						const defaultVal = filter.default.value;
 
 						const payload = {
-							name,
+							key,
 							value : defaultVal
 						};
 
@@ -220,8 +218,7 @@ export default {
 					}
 
 
-					default : {
-
+					default: {
 						break;
 					}
 				}
