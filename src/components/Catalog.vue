@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { ObjToArray, HasProperty } from '@/lib/utils';
+import { HasProperty } from '@/lib/utils';
 import FiltersPreview from '@/components/FiltersPreview';
 import Card from '@/components/Card';
 
@@ -83,7 +83,12 @@ export default {
 
 		filteredCourses() {
 			const filteredCourses = [];
-			const { filters, selectedFilters, savedCourseKeys, view } = this;
+			const {
+				filters,
+				selectedFilters,
+				savedCourseKeys,
+				view
+			} = this;
 
 			if ( !filters.length || !Object.keys( this.model ).length ) {
 				return [];
@@ -99,11 +104,8 @@ export default {
 
 			} )();
 
-			return courses;
-
 			// Filter by subjects
-			courses.forEach( ( course, i ) => {
-
+			courses.forEach( ( course ) => {
 				let addCourse = true;
 
 				if ( view === 'saved' && !HasProperty( savedCourseKeys, course.key ) ) {
@@ -113,44 +115,34 @@ export default {
 				}
 
 				filters.forEach( ( filter ) => {
-					const { name } = filter;
+					const { key, type } = filter;
 
-					// Use type from the courseModel instead of filter
-					// because a filter type can be boolean but the courseModel
-					// type is arbitrary. Arbitrary types with boolean filters
-					// just check if the course has a value for that property
-					const { type } = this.model[name];
-
-					const filterCondition = selectedFilters[name];
-
+					const filterCondition = selectedFilters[key];
 					if ( filterCondition === 'All' || filterCondition === false ) {
 						// the default value of the filter is set
 						return;
 					}
 
 					switch ( type ) {
-
-						case 'multi-list-item':
-
-							if ( !course[name] ) {
+						case 'abv-list':
+							if ( !course[key] ) {
 								addCourse = false;
 							}
-							else {
-								if ( !course[name][filterCondition] ) {
-									addCourse = false;
-								}
+							else if ( !course[key].find( a => a.value === filterCondition ) ) {
+								addCourse = false;
 							}
 
 							break;
 
 						case 'arbitrary':
-							if ( !course[name] ) {
+							if ( !course[key] ) {
 								addCourse = false;
 							}
 							break;
 
 						default:
-							if ( course[name] !== filterCondition ) {
+							// console.log( course[key], filterCondition );
+							if ( course[key] != filterCondition ) {
 								addCourse = false;
 							}
 							break;
@@ -193,7 +185,6 @@ export default {
 			if ( state === 'loaded' ) {
 				if ( key ) {
 					this.$store.dispatch( 'openCourseInfo', key );
-					return;
 				}
 			}
 
@@ -201,10 +192,10 @@ export default {
 	},
 
 	methods : {
-		viewCourse( key  ) {
+		viewCourse( key ) {
 			this.$router.push( {
-					path : this.$route.path,
-					query : { key }
+				path  : this.$route.path,
+				query : { key }
 			} );
 		},
 
@@ -223,8 +214,7 @@ export default {
 		Card,
 		FiltersPreview,
 	}
-
-}
+};
 
 </script>
 
@@ -347,4 +337,3 @@ export default {
 
 }
 </style>
-

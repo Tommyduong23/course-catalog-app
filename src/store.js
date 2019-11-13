@@ -104,6 +104,10 @@ export default new Vuex.Store( {
 						obj[key] = false;
 						break;
 
+					case 'arbitrary':
+						obj[key] = false;
+						break;
+
 					case 'list':
 						obj[key] = filter.options[0].value;
 						break;
@@ -135,7 +139,7 @@ export default new Vuex.Store( {
 			state.filters         = formattedFilters.sort( ( filter ) => {
 				const { type } = filter;
 
-				if ( type === 'boolean' ) {
+				if ( type === 'boolean' || type === 'arbitrary' ) {
 					return 1;
 				}
 

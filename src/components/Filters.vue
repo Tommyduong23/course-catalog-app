@@ -22,6 +22,8 @@
 							p {{ option.value }}
 				.boolean(v-if='filter.type == "boolean"' :class='{ active : selectedFilters[filter.key] }' @click='toggleBoolean( filter )')
 					p {{ filter.key }}
+				.boolean(v-if='filter.type == "arbitrary"' :class='{ active : selectedFilters[filter.key] }' @click='toggleBoolean( filter )')
+					p {{ filter.key }}
 </template>
 
 <script>

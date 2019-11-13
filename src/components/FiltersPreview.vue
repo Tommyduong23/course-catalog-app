@@ -8,8 +8,8 @@
 				v-for='filter in filtersPreview'
 			)
 				.text
-					p(v-if='filter.type === "list" || filter.type === "abv-list"') {{ filter.value }}: {{ filter.value }}
-					p(v-else-if='filter.type === "boolean"') {{ filter.name }} only
+					p(v-if='filter.type === "list" || filter.type === "abv-list"') {{ filter.key }}: {{ filter.value }}
+					p(v-else-if='filter.type === "boolean" || filter.type === "arbitrary"') {{ filter.key }} only
 				.icon-close(@click='clearFilter( filter )')
 			.clear-all(v-if='filtersPreview.length > 1' @click='resetFilters') Clear All
 </template>
@@ -55,19 +55,25 @@ export default {
 				const { type } = filter;
 
 				switch ( type ) {
-					case 'list-item':
-						if ( filter.default.value === selectedFilters[key] ) {
+					case 'list':
+						if ( filter.options[0].value === selectedFilters[key] ) {
 							return false;
 						}
 						break;
 
-					case 'multi-list-item':
-						if ( filter.default.value === selectedFilters[key] ) {
+					case 'abv-list':
+						if ( filter.options[0].value === selectedFilters[key] ) {
 							return false;
 						}
 						break;
 
 					case 'boolean':
+						if ( !selectedFilters[key] ) {
+							return false;
+						}
+						break;
+
+					case 'arbitrary':
 						if ( !selectedFilters[key] ) {
 							return false;
 						}
@@ -101,6 +107,10 @@ export default {
 							break;
 
 						case 'boolean':
+							v = true;
+							break;
+
+						case 'arbitrary':
 							v = true;
 							break;
 
@@ -143,6 +153,17 @@ export default {
 					this.$store.dispatch( 'selectFilter', payload );
 
 					break;
+
+				case 'arbitrary':
+					payload = {
+						key,
+						value : false,
+					};
+
+					this.$store.dispatch( 'selectFilter', payload );
+
+					break;
+
 
 				case 'list':
 					filter     = this.filters.find( a => a.key === key );
@@ -192,6 +213,17 @@ export default {
 						break;
 					}
 
+					case 'arbitrary': {
+						const payload = {
+							key,
+							value : false,
+						};
+
+						this.$store.dispatch( 'selectFilter', payload );
+
+						break;
+					}
+
 					case 'list': {
 						const defaultVal = filter.options[0].value;
 						const payload = {
@@ -205,7 +237,7 @@ export default {
 					}
 
 					case 'abv-list': {
-						const defaultVal = filter.default.value;
+						const defaultVal = filter.options[0].value;
 
 						const payload = {
 							key,

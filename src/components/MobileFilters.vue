@@ -3,27 +3,20 @@
 	.panel.easy-scroll
 		.filter.box(
 			v-for='filter in filters'
-			:class='filter.class'
-			v-if='filter.class !== "hidden"'
 		)
 			.tiles-container(
-				v-if='filter.type == "list-item" || filter.type == "multi-list-item"'
-				@click='activeMobileFilter = filter.name'
-				@mouseleave='opened[filter.name] = false'
+				v-if='filter.type == "list" || filter.type == "abv-list"'
+				@click='activeMobileFilter = filter.key'
+				@mouseleave='opened[filter.key] = false'
 			)
-				.title {{ filter.name }}
+				.title {{ filter.key }}
 				.tiles.easy-scroll
 					.tile(
-						:class='{ active : selectedFilters[filter.name] === filter.default.value }'
-						@click.stop='toggleOption( filter, filter.default )'
-					)
-						p {{ filter.default.name }}
-					.tile(
 						v-for='( option, i ) in filter.options'
-						:class='{ active : selectedFilters[filter.name] === option.value }'
+						:class='{ active : selectedFilters[filter.key] === option.value }'
 						@click.stop='toggleOption( filter, option )'
 					)
-						p {{ option.name }}
+						p {{ option.value }}
 		.filter.box
 			.tiles-container
 				//- kinda hacky, kinda not. this
@@ -39,10 +32,10 @@
 				.tiles.easy-scroll
 					.tile(
 						v-for='filter in booleanFilters'
-						:class='{ active : selectedFilters[filter.name] }'
-						@click.stop='selectedFilters[filter.name] = !selectedFilters[filter.name]'
+						:class='{ active : selectedFilters[filter.key] }'
+						@click.stop='selectedFilters[filter.key] = !selectedFilters[filter.key]'
 					)
-						p {{ filter.name }}
+						p {{ filter.key }}
 	.buttons
 		.display-text.secondary(@click='resetFilters') reset
 		.display-text(@click='toggleFilterState')
@@ -86,10 +79,10 @@ export default {
 	methods : {
 		toggleOption( filter, option ) {
 			const { value } = option;
-			const name = filter.name;
+			const { key } = filter;
 
 			const payload = {
-				name,
+				key,
 				value,
 			};
 
@@ -99,13 +92,13 @@ export default {
 		resetFilters() {
 			// reset each filter
 			this.filters.forEach( ( filter ) => {
-				const { name, type } = filter;
+				const { key, type } = filter;
 
 				switch ( type ) {
 
-					case 'boolean' : {
+					case 'boolean': {
 						const payload = {
-							name,
+							key,
 							value : false,
 						};
 
@@ -114,12 +107,22 @@ export default {
 						break;
 					}
 
-					case 'list-item' : {
-						const filter     = this.filters.find( a => a.name === name );
-						const defaultVal = filter.default.value;
+					case 'arbitrary': {
+						const payload = {
+							key,
+							value : false,
+						};
+
+						this.$store.dispatch( 'selectFilter', payload );
+
+						break;
+					}
+
+					case 'list': {
+						const defaultVal = filter.options[0].value;
 
 						const payload = {
-							name,
+							key,
 							value : defaultVal
 						};
 
@@ -128,12 +131,11 @@ export default {
 						break;
 					}
 
-					case 'multi-list-item' : {
-						const filter     = this.filters.find( a => a.name === name );
-						const defaultVal = filter.default.value;
+					case 'abv-list': {
+						const defaultVal = filter.options[0].value;
 
 						const payload = {
-							name,
+							key,
 							value : defaultVal
 						};
 
@@ -142,7 +144,7 @@ export default {
 						break;
 					}
 
-					default : {
+					default: {
 						break;
 					}
 				}
@@ -166,11 +168,11 @@ export default {
 			const payload = {
 				type,
 				value
-			}
-			this.$store.dispatch( 'updateOpened', payload )
+			};
+			this.$store.dispatch( 'updateOpened', payload );
 		}
 	}
-}
+};
 </script>
 
 <style lang="scss">

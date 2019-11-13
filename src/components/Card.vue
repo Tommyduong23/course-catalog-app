@@ -92,6 +92,10 @@ export default {
 					}
 				};
 
+				if ( !card[key] ) {
+					return;
+				}
+
 				switch ( type ) {
 					case 'boolean':
 						tag.name = key;
@@ -103,12 +107,12 @@ export default {
 						tags.push( tag );
 						break;
 
-					case 'list-item':
+					case 'list':
 						tag.name = card[key];
 						tags.push( tag );
 						break;
 
-					case 'multi-list-item':
+					case 'abv-list':
 						 ObjToArray( card[key] ).forEach( ( item ) => {
 
 							const t = {
