@@ -326,18 +326,6 @@ export default new Vuex.Store( {
 					commit( 'updateStore', ['courseState', 'loaded'] );
 				} );
 
-			// Ref
-			// 	.child( 'filters' )
-			// 	.on( 'value', ( snapshot ) => {
-			// 		const filters = snapshot.val();
-
-			// 		if ( !filters ) {
-			// 			return;
-			// 		}
-
-			// 		commit( 'updateFilters', filters );
-			// 	} );
-
 			Ref.child( 'model' )
 				.on( 'value', ( snapshot ) => {
 					const model = snapshot.val();

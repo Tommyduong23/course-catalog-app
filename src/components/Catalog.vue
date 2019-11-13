@@ -142,7 +142,7 @@ export default {
 
 						default:
 							// console.log( course[key], filterCondition );
-							if ( course[key] != filterCondition ) {
+							if ( course[key] !== filterCondition ) {
 								addCourse = false;
 							}
 							break;
