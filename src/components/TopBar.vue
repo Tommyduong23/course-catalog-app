@@ -11,7 +11,7 @@
 					search-bar(
 						:starting-value='query'
 						@focus='toggleSearchState'
-						@input='query = $event'
+						@input='search'
 					)
 
 					.title-wrapper
@@ -97,26 +97,17 @@ export default {
 
 	},
 
-	watch : {
-		query( query ) {
+	methods : {
 
+		search( query ) {
 			if ( this.searchTimeout ) {
 				window.clearTimeout( this.searchTimeout );
-			}
-
-			if ( !query ) {
-				this.$store.dispatch( 'search', query );
-				return;
 			}
 
 			this.searchTimeout = window.setTimeout( () => {
 				this.$store.dispatch( 'search', query );
 			}, 400 );
-
 		},
-	},
-
-	methods : {
 
 		toggleSearchState() {
 

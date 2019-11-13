@@ -1,5 +1,5 @@
 import env from '@/assets/env';
-import { GetCurrentUserToken } from '@/lib/db';
+import { GetCurrentUserToken } from '@/lib/db/auth';
 
 const path = ( a, queryOptions = null ) => {
 	const query = ( () => {
@@ -79,35 +79,12 @@ const _body = async ( res ) => {
 	return text;
 };
 
-export const Upload = authenticate( _auth => new Promise( ( resolve, reject ) => {
-
-	fetchPromise( path( 'sheets/upload' ), {
-		method  : 'POST',
-		headers : new Headers( {
-			'Auth-Token'   : _auth.token,
-			'Content-Type' : 'application/json'
-		} ),
-	} )
-		.then( ( data ) => {
-
-			if ( data.status === 500 ) {
-				return reject( data );
-			}
-
-			return resolve( data );
-		} )
-		.catch( reject );
-
+export const Upload = authenticate( _auth => fetchPromise( path( 'sheets/upload' ), {
+	method  : 'POST',
+	headers : _auth.defaultHeaders
 } ) );
 
-export const Search = query => new Promise( ( resolve ) => {
-
-	fetchPromise( path( `search/${query}` ), {
-		method : 'GET',
-		header : new Headers( {
-			'Content-Type' : 'application/json'
-		} )
-	} )
-		.then( resolve );
-
-} );
+export const Search = authenticate( ( _auth, query ) => fetchPromise( path( 'catalog/search', { searchQuery : query } ), {
+	method  : 'GET',
+	headers : _auth.defaultHeaders
+} ) );
