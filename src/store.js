@@ -89,7 +89,7 @@ export default new Vuex.Store( {
 					filter.options = [{ value : 'All' }].concat( filter.options );
 				}
 
-				if ( type === 'abv-list' ) {
+				if ( type === 'label-list' ) {
 					filter.options = [{ abv : 'All', value : 'All' }].concat( filter.options );
 				}
 
@@ -112,7 +112,7 @@ export default new Vuex.Store( {
 						obj[key] = filter.options[0].value;
 						break;
 
-					case 'abv-list':
+					case 'label-list':
 						obj[key] = filter.options[0].value;
 						break;
 
@@ -486,26 +486,32 @@ export default new Vuex.Store( {
 
 			Upload()
 				.then( ( data ) => {
-					const { status } = data;
-
-					switch ( status ) {
-						case 202:
-							commit( 'updateStore', ['uploadErrorsState', 'success'] );
-							break;
-						case 400:
-							commit( 'uploadFail', data.errors );
-							break;
-						default:
-							break;
-					}
-
-				} )
-				.catch( ( err ) => {
-
-					// Handle application err
-					commit( 'updateStore', ['uploadErrorsState', 'error'] );
-
+					console.log( data );
+					commit( 'updateStore', ['uploadErrorsState', 'success'] );
 				} );
+
+			// Upload()
+			// 	.then( ( data ) => {
+			// 		const { status } = data;
+
+			// 		switch ( status ) {
+			// 			case 202:
+			// 				commit( 'updateStore', ['uploadErrorsState', 'success'] );
+			// 				break;
+			// 			case 400:
+			// 				commit( 'uploadFail', data.errors );
+			// 				break;
+			// 			default:
+			// 				break;
+			// 		}
+
+			// 	} )
+			// 	.catch( ( err ) => {
+
+			// 		// Handle application err
+			// 		commit( 'updateStore', ['uploadErrorsState', 'error'] );
+
+			// 	} );
 
 		},
 

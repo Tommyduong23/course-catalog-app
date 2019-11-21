@@ -28,8 +28,6 @@
 
 <script>
 import FileUpload from '@/components/FileUpload';
-import { Ref, FirebaseKey } from '@/lib/db';
-import { Upload } from '@/lib/API';
 
 export default {
 	name : 'sidebar',

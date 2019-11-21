@@ -41,7 +41,8 @@ export default {
 	},
 
 	data : () => ( {
-		maxVisible : 50,
+		maxVisible       : 50,
+		isFiltersFromUrl : false
 	} ),
 
 	computed : {
@@ -124,7 +125,7 @@ export default {
 					}
 
 					switch ( type ) {
-						case 'abv-list':
+						case 'label-list':
 							if ( !course[key] ) {
 								addCourse = false;
 							}
@@ -187,7 +188,24 @@ export default {
 					this.$store.dispatch( 'openCourseInfo', key );
 				}
 			}
+		},
 
+		'selectedFilters' : {
+			deep      : true,
+			immediate : true,
+			handler( selectedFilters ) {
+
+				if ( !Object.keys( selectedFilters ).length ) {
+					return;
+				}
+
+				if ( !this.isFiltersFromUrl ) {
+					this.loadFiltersFromUrl();
+					this.isFiltersFromUrl = true;
+				}
+
+				this.setFiltersToUrl();
+			}
 		}
 	},
 
@@ -208,6 +226,58 @@ export default {
 		scrollTopbar( e ) {
 			this.$emit( 'scroll-topbar', e );
 		},
+
+		loadFiltersFromUrl() {
+			const { selectedFilters } = this;
+
+			Object.keys( selectedFilters ).forEach( ( key ) => {
+				const v = this.$route.query[key];
+
+				if ( !v ) {
+					return;
+				}
+
+				const isBoolean = v === 'true' || v === 'false';
+				const value = isBoolean ? v === 'true' : v;
+
+				const payload = {
+					key,
+					value,
+				};
+
+				this.$store.dispatch( 'selectFilter', payload );
+			} );
+		},
+
+		setFiltersToUrl() {
+			const { selectedFilters, filters } = this;
+
+			const query = filters.reduce( ( obj, filter ) => {
+				const { key, type } = filter;
+
+				const defaultValue = ( () => {
+					if ( type === 'boolean' || type === 'arbitrary' ) {
+						return false;
+					}
+
+					return filter.options[0].value;
+				} )();
+
+				if ( selectedFilters[key] === defaultValue ) {
+					return obj;
+				}
+
+				obj[key] = selectedFilters[key]; // eslint-disable-line
+				return obj;
+
+
+			}, {} );
+
+			this.$router.push( {
+				path : this.$route.path,
+				query,
+			} );
+		}
 	},
 
 	components : {

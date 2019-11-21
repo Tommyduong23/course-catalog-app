@@ -8,7 +8,7 @@
 				v-for='filter in filtersPreview'
 			)
 				.text
-					p(v-if='filter.type === "list" || filter.type === "abv-list"') {{ filter.key }}: {{ filter.value }}
+					p(v-if='filter.type === "list" || filter.type === "label-list"') {{ filter.key }}: {{ filter.value }}
 					p(v-else-if='filter.type === "boolean" || filter.type === "arbitrary"') {{ filter.key }} only
 				.icon-close(@click='clearFilter( filter )')
 			.clear-all(v-if='filtersPreview.length > 1' @click='resetFilters') Clear All
@@ -61,7 +61,7 @@ export default {
 						}
 						break;
 
-					case 'abv-list':
+					case 'label-list':
 						if ( filter.options[0].value === selectedFilters[key] ) {
 							return false;
 						}
@@ -101,7 +101,7 @@ export default {
 							v = option.value;
 							break;
 
-						case 'abv-list':
+						case 'label-list':
 							option = filter.options.find( a => a.value === selected );
 							v = option.value;
 							break;
@@ -178,7 +178,7 @@ export default {
 
 					break;
 
-				case 'abv-list':
+				case 'label-list':
 					filter     = this.filters.find( a => a.key === key );
 					defaultVal = filter.options[0].value;
 
@@ -236,7 +236,7 @@ export default {
 						break;
 					}
 
-					case 'abv-list': {
+					case 'label-list': {
 						const defaultVal = filter.options[0].value;
 
 						const payload = {

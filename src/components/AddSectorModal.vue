@@ -135,34 +135,34 @@ export default {
 				uploadFileJob.then( snapshot => snapshot.ref.getDownloadURL() ),
 				uploadLogoJob.then( snapshot => snapshot.ref.getDownloadURL() )
 			] )
-			.then( ( urls ) => {
-				const fileUrl = urls[0];
-				const logoUrl = urls[1];
+				.then( ( urls ) => {
+					const fileUrl = urls[0];
+					const logoUrl = urls[1];
 
-				const newSector = Object.assign( {}, this.newSector );
+					const newSector = Object.assign( {}, this.newSector );
 
-				newSector.fileKey = fileKey;
-				newSector.url     = fileUrl;
-				newSector.logoKey = logoKey;
-				newSector.logoUrl = logoUrl;
+					newSector.fileKey = fileKey;
+					newSector.url     = fileUrl;
+					newSector.logoKey = logoKey;
+					newSector.logoUrl = logoUrl;
 
-				return Ref.child( 'cte' )
-					.child( schoolKey )
-					.push()
-					.set( newSector );
+					return Ref.child( 'cte' )
+						.child( schoolKey )
+						.push()
+						.set( newSector );
 
-			} )
-			.then( () => {
+				} )
+				.then( () => {
 
-				this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
-				window.setTimeout( () => {
-					this.cancelSectorUpload();
-				}, 2000 );
+					this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
+					window.setTimeout( () => {
+						this.cancelSectorUpload();
+					}, 2000 );
 
-			} )
-			.catch( () => {
-				this.$store.dispatch( 'updateStore', ['modalStep', 'failed'] );
-			} );
+				} )
+				.catch( () => {
+					this.$store.dispatch( 'updateStore', ['modalStep', 'failed'] );
+				} );
 
 		},
 
@@ -251,7 +251,6 @@ export default {
 		},
 
 	}
-
 }
 </script>
 

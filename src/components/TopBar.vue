@@ -110,7 +110,6 @@ export default {
 		},
 
 		toggleSearchState() {
-
 			if ( this.state !== 'search' ) {
 				this.$emit( 'update-topbar', 'search' );
 				return;
@@ -118,7 +117,6 @@ export default {
 
 			const state = this.scrollTop > 50 ? 'collapsed' : '';
 			this.$emit( 'update-topbar', state );
-
 		},
 
 		toggleSubjectBar() {

@@ -28,10 +28,8 @@
 							.icon
 								i.material-icons error
 							.text
-								p.title {{ error.sheet }} : {{ error.name }}
+								p.title {{ error.sheet }}
 								p {{ error.msg }}
-
-
 				.body(:class='{ active : state === "error" }')
 					.big.red
 						h1 Application Error
@@ -53,10 +51,6 @@ export default {
 	} ),
 
 	computed : {
-		errors() {
-			return this.$store.state.errors;
-		},
-
 		opened() {
 			return this.$store.state.uploadOpened;
 		},
@@ -68,7 +62,6 @@ export default {
 		errors() {
 			return this.$store.state.uploadErrors;
 		},
-
 	},
 
 	mounted() {

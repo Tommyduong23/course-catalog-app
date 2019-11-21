@@ -1,10 +1,10 @@
 <template lang="pug">
 	#sectors
 		.sectors-wrapper(v-if='sectors.length && !loadingSectors')
-			a.cte-sector(v-for='sector in sectors' :href='sector.url' target='_blank')
+			.cte-sector(v-for='sector in sectors' @click='routeTo( sector)')
 				.sector
 					.logo
-						img(v-if='sector.logoUrl' :src='sector.logoUrl')
+						img(v-if='sector.iconUrl' :src='sector.iconUrl')
 					.title
 						p {{ sector.title }}
 					.sub-title Learn more
@@ -97,10 +97,19 @@ export default {
 
 			this.areYouSure = false;
 
+		},
+
+		routeTo( sector ) {
+			this.$router.push( {
+				path  : 'sector-info',
+				query : {
+					schoolName : this.activeSchool.value,
+					sectorName : sector.key,
+				}
+			} );
 		}
 	},
-
-}
+};
 </script>
 
 <style lang="scss">

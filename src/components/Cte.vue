@@ -63,11 +63,9 @@ export default {
 		},
 
 		schools() {
-
 			const schools = ObjToArray( this.$store.state.schools );
 
 			return schools;
-
 		},
 
 		loadingSectors() {
