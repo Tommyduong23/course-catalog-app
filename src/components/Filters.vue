@@ -169,7 +169,8 @@ export default {
 
 		.filters {
 			display: flex;
-			max-width: 100%;
+			justify-content: center;
+			width: 100%;
 			height: calc(100vh - 16px );
 			align-items: flex-start;
 			overflow: auto;
