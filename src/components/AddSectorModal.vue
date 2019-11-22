@@ -12,12 +12,13 @@
 				.failure
 					.failed
 					.text Failed to Upload
-			p.spacey {{ isEditing ? 'Edit' : 'Upload a New' }} Sector
-			.input
-				.input-label(:class='{ active : newSector.title !== "" }') Name
-				input(type='text' v-model='newSector.title' placeholder='Type a Name')
-			.row
-				.file-input
+			p.spacey {{ isEditing ? 'Edit' : 'Create a New' }} Sector
+			custom-dropdown.sector-dropdown(
+				v-model='newSector.title'
+				:options='titleOptions'
+			)
+			.column
+				.file-input.row
 					p.label {{ isEditing ? 'Edit' : 'Upload' }} PDF
 					file-upload(
 						v-show='isAdmin'
@@ -26,24 +27,27 @@
 						:emit-immediately='true'
 						:reset='state == "browse"'
 						:id='"cte-upload"'
+						:preview='newSector.fileUrl'
 					)
-				.file-input
+				.file-input.row
 					p.label {{ isEditing ? 'Edit' : 'Upload' }} Logo
 					file-upload(
 						v-show='isAdmin'
 						@file='uploadLogo'
-						:allowed-ext='["png", "jpg"]'
+						:allowed-ext='["png", "jpg", "jpeg"]'
 						:emit-immediately='true'
 						:reset='state == "browse"'
+						:preview='newSector.iconUrl'
 					)
 			.buttons
 				.button.no-bg(@click='cancelSectorUpload') cancel
 				.button(@click='() => { if ( isEditing ) { editSector() } else { saveSector() } }') save
-			.error-message Please add a name, file and logo
+			.error-message Please select a sector
 </template>
 
 <script>
 import FileUpload from '@/components/FileUpload';
+import CustomDropdown from '@/components/CustomDropdown';
 import { firebase, Ref, FirebaseKey } from '@/lib/db';
 
 export default {
@@ -57,6 +61,7 @@ export default {
 
 	components : {
 		FileUpload,
+		CustomDropdown,
 	},
 
 	data : () => ( {
@@ -84,10 +89,53 @@ export default {
 
 		newSector() {
 			return this.$store.state.newSector;
-		}
+		},
+
+		titleOptions() {
+			return {
+				options     : this.getSectors,
+				defaultText : 'Select a Sector',
+				searchable  : false,
+			};
+		},
 	},
 
 	methods : {
+		async getSectors() {
+			let data;
+
+			const sectorKeys = [];
+
+			await firebase.database().ref( 'cteSectors' )
+				.once( 'value' )
+				.then( ( snapshot ) => {
+					data = snapshot.val();
+					const keys = Object.keys( data );
+
+					keys.forEach( ( key ) => {
+						sectorKeys.push( key );
+					} );
+				} );
+
+			// we're going to through our sector keys and return
+			// a new array of the values from the sector keys by
+			// using the data variable
+
+			const formattedSectors = sectorKeys.reduce( ( sectors, key ) => {
+
+				const { value } = data[key];
+
+				sectors.push( {
+					text : value,
+					value
+				} );
+
+				return sectors;
+			}, [] );
+
+			return formattedSectors;
+		},
+
 		cancelSectorUpload() {
 			this.$store.dispatch( 'closeSectorUpload' );
 		},
@@ -100,8 +148,8 @@ export default {
 			this.logo = logo;
 		},
 
-		saveSector() {
-			if ( !this.newSector.title || !this.file || !this.logo ) {
+		async saveSector() {
+			if ( !this.newSector.title ) {
 				this.$store.dispatch( 'updateStore', ['modalStep', 'error'] );
 				return;
 			}
@@ -115,46 +163,47 @@ export default {
 			const logoKey = FirebaseKey();
 			const { logo } = this;
 
-			const uploadFileJob = firebase.storage()
-				.ref( '/' )
+			const uploadJobAsset = ( asset, key ) => {
+
+				const type = asset.type.split( '/' )[1];
+
+				const upload = firebase.storage()
+					.ref( '/' )
+					.child( schoolKey )
+					.child( `${key}.${type}` )
+					.put( asset );
+
+				upload.on( 'state_changed', ( snapshot ) => {
+					this.uploadProgress = ( snapshot.bytesTransferred / snapshot.totalBytes );
+				} );
+
+				return upload.then( snapshot => snapshot.ref.getDownloadURL() );
+			};
+
+			let fileUrl = null;
+			let iconUrl = null;
+
+			if ( file ) {
+				fileUrl = await uploadJobAsset( file, fileKey );
+			}
+
+			if ( logo ) {
+				iconUrl = await uploadJobAsset( logo, logoKey );
+			}
+
+			const newSector = Object.assign( {}, this.newSector );
+
+			newSector.iconUrl = iconUrl;
+			newSector.fileUrl = fileUrl;
+
+			Ref.child( 'cte' )
 				.child( schoolKey )
-				.child( `${fileKey}.pdf` )
-				.put( file );
-
-			const uploadLogoJob = firebase.storage()
-				.ref( '/' )
-				.child( schoolKey )
-				.child( `${logoKey}.png` )
-				.put( logo );
-
-			uploadFileJob.on( 'state_changed', ( snapshot ) => {
-				this.uploadProgress = ( snapshot.bytesTransferred / snapshot.totalBytes );
-			} );
-
-			Promise.all( [
-				uploadFileJob.then( snapshot => snapshot.ref.getDownloadURL() ),
-				uploadLogoJob.then( snapshot => snapshot.ref.getDownloadURL() )
-			] )
-				.then( ( urls ) => {
-					const fileUrl = urls[0];
-					const logoUrl = urls[1];
-
-					const newSector = Object.assign( {}, this.newSector );
-
-					newSector.fileKey = fileKey;
-					newSector.url     = fileUrl;
-					newSector.logoKey = logoKey;
-					newSector.logoUrl = logoUrl;
-
-					return Ref.child( 'cte' )
-						.child( schoolKey )
-						.push()
-						.set( newSector );
-
-				} )
+				.child( newSector.title )
+				.set( newSector )
 				.then( () => {
 
 					this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
+
 					window.setTimeout( () => {
 						this.cancelSectorUpload();
 					}, 2000 );
@@ -166,77 +215,46 @@ export default {
 
 		},
 
-		editSector() {
+		async editSector() {
 			const schoolKey = this.activeSchoolKey;
 			const sectorKey = this.newSector.key;
 
-			const promises = [];
+			let fileUrl = null;
+			let iconUrl = null;
 
 			this.$store.dispatch( 'updateStore', ['modalStep', 'uploading'] );
 
-			if ( this.file ) {
+			const uploadJobAsset = ( asset, key ) => {
 
-				const fileKey = this.newSector.fileKey || FirebaseKey();
+				const type = asset.type.split( '/' )[1];
 
-				const uploadFileJob = firebase.storage()
+				const upload = firebase.storage()
 					.ref( '/' )
 					.child( schoolKey )
-					.child( `${fileKey}.pdf` )
-					.put( this.file );
+					.child( `${key}.${type}` )
+					.put( asset );
 
-				promises.push( uploadFileJob );
-
-				uploadFileJob.on( 'state_changed', ( snapshot ) => {
+				upload.on( 'state_changed', ( snapshot ) => {
 					this.uploadProgress = ( snapshot.bytesTransferred / snapshot.totalBytes );
 				} );
 
-				uploadFileJob.then( snapshot => snapshot.ref.getDownloadURL() )
-					.then( ( url ) => {
+				return upload.then( snapshot => snapshot.ref.getDownloadURL() );
+			};
 
-						return Ref.child( 'cte' )
-							.child( schoolKey )
-							.child( sectorKey )
-							.update( {
-								fileKey,
-								url,
-							} );
-
-					} );
-
+			if ( this.file ) {
+				fileUrl = await uploadJobAsset( this.file, this.newSector.fileKey );
 			}
 
 			if ( this.logo ) {
-				const logoKey = this.newSector.logoKey || FirebaseKey();
-
-				const uploadLogoJob = firebase.storage()
-					.ref( '/' )
-					.child( schoolKey )
-					.child( `${logoKey}.png` )
-					.put( this.logo );
-
-				promises.push( uploadLogoJob );
-
-				uploadLogoJob.then( snapshot => snapshot.ref.getDownloadURL() )
-					.then( ( url ) => {
-
-						return Ref.child( 'cte' )
-							.child( schoolKey )
-							.child( sectorKey )
-							.update( {
-								logoKey,
-								logoUrl : url
-							} );
-
-					} );
+				iconUrl = await uploadJobAsset( this.logo, this.newSector.iconUrl );
 			}
+
+			const formattedSector = Object.assign( {}, this.newSector, { iconUrl, fileUrl } )
 
 			Ref.child( 'cte' )
 				.child( schoolKey )
 				.child( sectorKey )
-				.child( 'title' )
-				.set( this.newSector.title );
-
-			Promise.all( promises )
+				.set( formattedSector )
 				.then( ( ) => {
 					this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
 
@@ -287,6 +305,7 @@ export default {
 
 		.modal-wrapper {
 			max-width: 700px;
+			max-height: 90vh;
 			transform: scale(0.8,0.8);
 			transition: transform 0.4s ease;
 			padding: 25px;
@@ -297,7 +316,7 @@ export default {
 			width: 80%;
 			display: flex;
 			flex-direction: column;
-			overflow: hidden;
+			overflow: hidden scroll;
 			will-change: transition;
 
 			&.error {
@@ -430,6 +449,29 @@ export default {
 				}
 			}
 
+			.spacey {
+				padding-bottom: 10px;
+				border-bottom: 1px solid $lightGrey;
+			}
+
+			.sector-dropdown {
+				z-index: 11!important;
+				width: 100%;
+				padding-top: 15px;
+
+				.select-display {
+					z-index: 2;
+
+					p {
+						width: 100%;
+
+						&.minimal-label {
+							left: 0;
+						}
+					}
+				}
+			}
+
 			> p {
 				pointer-events: none;
 			}
@@ -463,103 +505,114 @@ export default {
 				}
 			}
 
-			.file-input {
-				width: 50%;
+			.column {
+				align-items: center;
+				margin: 10px 0;
 
-				p.label {
-					color: $primary;
-					font-size: 18px;
-				}
+				.file-input {
+					width: 100%;
+					align-items: center;
+					justify-content: space-evenly;
 
-				.file-upload {
-
-					&.error {
-
-						.file {
-							display: none;
-						}
-
-						label {
-							color: $cancel !important;
-							border: 2px solid $cancel !important;
-						}
+					&:not( :first-of-type ) {
+						margin-top: 15px;
 					}
 
-					.button {
-						display: none !important;
-					}
-
-					.drop-zone {
-						padding: 20px;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						flex-direction: row-reverse;
-
-						.upload-button {
-							padding: 15px;
-							border-radius: 30px;
-							border: 2px solid $primary;
-							text-transform: uppercase;
-							background: transparent;
-						}
-
-						.file {
-							overflow: hidden;
-
-							p {
-								overflow: hidden;
-								text-overflow: ellipsis;
-								font-size: 14px;
-							}
-
-						}
-
-						.upload-button,
-						.no-file p,
-						.file,
-						.error-msg p {
-							color: $primary;
-							font-size: 14px;
-							letter-spacing: 5px;
-							text-transform: uppercase;
-						}
-
-						.error-msg p {
-							color: $cancel !important;
-						}
-
-						.file,
-						.error-msg {
-							margin: 0;
-							margin-left: 15px;
-						}
-
-						.no-file {
-
-							p {
-								margin-left: 15px;
-
-								&::before {
-									content: 'or ';
-								}
-
-								&:nth-child(2) {
-									display: none;
-								}
-							}
-						}
-					}
-
-					p {
+					p.label {
 						color: $primary;
+						font-size: 18px;
+					}
+
+					.file-upload {
 
 						&.error {
-							color: $cancel;
+
+							.file {
+								display: none;
+							}
+
+							label {
+								color: $cancel !important;
+								border: 2px solid $cancel !important;
+							}
+						}
+
+						.button {
+							display: none !important;
+						}
+
+						.drop-zone {
+							padding: 20px;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							flex-direction: row-reverse;
+							flex-wrap: wrap;
+
+							.upload-button {
+								padding: 15px;
+								border-radius: 30px;
+								border: 2px solid $primary;
+								text-transform: uppercase;
+								background: transparent;
+							}
+
+							.file {
+								overflow: hidden;
+
+								p {
+									overflow: hidden;
+									text-overflow: ellipsis;
+									font-size: 14px;
+								}
+
+							}
+
+							.upload-button,
+							.no-file p,
+							.file,
+							.error-msg p {
+								color: $primary;
+								font-size: 14px;
+								letter-spacing: 5px;
+								text-transform: uppercase;
+							}
+
+							.error-msg p {
+								color: $cancel !important;
+							}
+
+							.file,
+							.error-msg {
+								margin: 0;
+								margin-left: 15px;
+							}
+
+							.no-file {
+
+								p {
+									margin-left: 15px;
+
+									&::before {
+										content: 'or ';
+									}
+
+									&:nth-child(2) {
+										display: none;
+									}
+								}
+							}
+						}
+
+						p {
+							color: $primary;
+
+							&.error {
+								color: $cancel;
+							}
 						}
 					}
 				}
-
 			}
 
 			> *:not(.file-upload) {

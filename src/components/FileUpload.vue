@@ -7,11 +7,16 @@
 			:class='{ dragover }'
 			ref='dropzone'
 		)
+			embed.file-preview(
+				v-if='file || preview'
+				:src='fileSrc || preview'
+				:type='fileType'
+			)
 			.no-file
 				p Drop Here
 				p - or -
-			.error-message
-				p {{ error }}
+			.error-message(:class='{ active : error }')
+				p.error {{ error }}
 			.file(v-if='file')
 				p {{ file.name }}
 			label.upload-button(:for='id') Choose a file
@@ -40,7 +45,11 @@ export default {
 		id : {
 			type    : String,
 			default : 'manual-upload',
-		}
+		},
+
+		preview : {
+			type : String,
+		},
 	},
 
 	mounted() {
@@ -70,12 +79,16 @@ export default {
 		dragover : false,
 		file     : null,
 		error    : null,
-		state    : 'empty'
+		state    : 'empty',
+
+		fileSrc : null,
 	} ),
 
 	watch : {
 
 		file( file ) {
+
+			this.error = null;
 
 			if ( !file ) {
 				this.state = 'empty';
@@ -110,6 +123,16 @@ export default {
 
 		}
 
+	},
+
+	computed : {
+		fileType() {
+			if ( this.file ) {
+				return this.file.type;
+			}
+
+			return '';
+		}
 	},
 
 	methods : {
@@ -151,11 +174,20 @@ export default {
 
 			this.file = file;
 
+			const reader = new FileReader();
+
+			reader.onload = ( fileData ) => {
+				console.log( this );
+				this.fileSrc = fileData.target.result;
+			};
+
+			reader.readAsDataURL( file );
+
 		},
 
 		validate( file ) {
 
-			const ext = file.name.split( '.' )[1];
+			const ext = file.type.split( '/' )[1];
 
 			let valid = false;
 
@@ -245,6 +277,17 @@ export default {
 				background-color: #4d6ea2;
 			}
 
+			> * {
+				flex: 1 0 0;
+			}
+
+			.file-preview {
+				flex: 0 0 100%;
+				max-width: 100%;
+				height: 150px;
+				margin-bottom: 15px;
+			}
+
 			.no-file {
 				display: none;
 
@@ -275,6 +318,11 @@ export default {
 				color: white;
 				pointer-events: none;
 				margin: 10px 0px;
+
+				&.active {
+					display: block;
+					opacity: 1!important;
+				}
 			}
 
 			label.upload-button {
