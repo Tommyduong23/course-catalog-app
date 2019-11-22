@@ -3,7 +3,7 @@
 		.filters.noselect(ref='filters')
 			.filter(v-for='filter in filters' :class='filter.class')
 				.dropdown-menu(
-					v-if='filter.type == "list" || filter.type == "label-list"'
+					v-if='filter.type == "list" || filter.type == "multi-list"'
 					:class='{ opened : openedFilters[filter.key], hidden : filter.key === primaryKey}'
 					@click='setOpened( filter.key, !openedFilters[filter.key] )'
 					@mouseleave='setOpened( filter.key, false )'
@@ -61,7 +61,7 @@ export default {
 
 				const leftBound = this.$refs.filters.getBoundingClientRect().left;
 
-				const listFilters = filters.filter( a => a.type === 'list' || a.type === 'label-list' );
+				const listFilters = filters.filter( a => a.type === 'list' || a.type === 'multi-list' );
 
 				listFilters.forEach( ( filter ) => {
 					const { key } = filter;

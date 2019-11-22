@@ -125,7 +125,7 @@ export default {
 					}
 
 					switch ( type ) {
-						case 'label-list':
+						case 'multi-list':
 							if ( !course[key] ) {
 								addCourse = false;
 							}

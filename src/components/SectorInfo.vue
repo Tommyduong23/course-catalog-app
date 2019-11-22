@@ -94,7 +94,7 @@ export default {
 			// const schoolFilter = this.filters.find( ( filter ) => {
 			// 	const { type } = filter;
 
-			// 	if ( type !== 'list' && type !== 'label-list' ) {
+			// 	if ( type !== 'list' && type !== 'multi-list' ) {
 			// 		return false;
 			// 	}
 
@@ -104,7 +104,7 @@ export default {
 			const pathwayFilter = this.filters.find( ( filter ) => {
 				const { type } = filter;
 
-				if ( type !== 'list' && type !== 'label-list' ) {
+				if ( type !== 'list' && type !== 'multi-list' ) {
 					return false;
 				}
 

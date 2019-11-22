@@ -112,7 +112,7 @@ export default {
 						tags.push( tag );
 						break;
 
-					case 'label-list':
+					case 'multi-list':
 						 ObjToArray( card[key] ).forEach( ( item ) => {
 
 							const t = {
