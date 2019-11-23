@@ -19,6 +19,8 @@
 						p(v-html='pathway.description')
 		iframe.pdf-viewer(v-if='sectorCard && sectorCard.fileUrl' :src='sectorCard.fileUrl')
 		.no-pdf(v-else)
+			h1 No PDF uploaded for this CTE Sector
+			.button(@click='goBack') Go Back
 
 
 </template>
@@ -131,6 +133,10 @@ export default {
 				path : 'courses',
 				query,
 			} );
+		},
+
+		goBack() {
+			this.$router.push( 'cte' );
 		}
 	}
 
@@ -240,9 +246,23 @@ export default {
 		}
 
 		.no-pdf {
+			display: flex;
 			height: 100%;
 			flex: 1 1 0;
 			background :#d0d1db;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+			h1 {
+				color: $primary;
+				font-size: 36px;
+				margin-bottom: 15px;
+			}
+
+			.button {
+				font-size: 24px;
+			}
 		}
 	}
 
