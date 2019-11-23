@@ -219,8 +219,8 @@ export default {
 			const schoolKey = this.activeSchoolKey;
 			const sectorKey = this.newSector.key;
 
-			let fileUrl = null;
-			let iconUrl = null;
+			let fileUrl = this.newSector.fileUrl || null;
+			let iconUrl = this.newSector.iconUrl || null;
 
 			this.$store.dispatch( 'updateStore', ['modalStep', 'uploading'] );
 
@@ -249,7 +249,7 @@ export default {
 				iconUrl = await uploadJobAsset( this.logo, this.newSector.iconUrl );
 			}
 
-			const formattedSector = Object.assign( {}, this.newSector, { iconUrl, fileUrl } )
+			const formattedSector = Object.assign( {}, this.newSector, { iconUrl, fileUrl } );
 
 			Ref.child( 'cte' )
 				.child( schoolKey )
@@ -269,7 +269,7 @@ export default {
 		},
 
 	}
-}
+};
 </script>
 
 <style lang="scss">
@@ -521,9 +521,11 @@ export default {
 					p.label {
 						color: $primary;
 						font-size: 18px;
+						width: 20%;
 					}
 
 					.file-upload {
+						width: 70%;
 
 						&.error {
 
