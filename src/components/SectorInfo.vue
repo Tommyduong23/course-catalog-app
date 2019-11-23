@@ -1,13 +1,14 @@
 <template lang="pug">
 	.sector-info
-		.side
+		.side(v-if='pathways')
 			.sector(v-if='sectorCard')
 				.title
-					img.icon(:src='sectorCard.iconUrl')
-					p {{ sectorCard.title }}
+					img(v-if='sectorCard.iconUrl' :src='sectorCard.iconUrl')
+					h2 {{ sectorCard.title }}
 				//- .description
 				//- 	p {{ sector.description }}
 			.pathways
+				p.header Pathways
 				.pathway(v-for='pathway in pathways')
 					p.name {{ pathway.value }}
 					.pathway-options
@@ -16,7 +17,9 @@
 						p(@click='viewPathwayCourses( pathway.value )') view courses
 					.pathway-description(:class='{ open : isDescriptionOpen[pathway.value] }')
 						p(v-html='pathway.description')
-		iframe.pdf-viewer(v-if='sectorCard' :src='sectorCard.fileUrl')
+		iframe.pdf-viewer(v-if='sectorCard && sectorCard.fileUrl' :src='sectorCard.fileUrl')
+		.no-pdf(v-else)
+
 
 </template>
 
@@ -145,15 +148,19 @@ export default {
 			overflow: auto;
 
 			.sector {
-				margin-top: 30px;
-				margin-bottom: 30px;
+				margin: 30px 15px;
 
 				.title {
 					display: flex;
 					flex-direction: column;
 					align-items: center;
 
-					.icon {
+					h2 {
+						color : $primary;
+						text-align: center;
+					}
+
+					img, .no-icon {
 						height: 100px;
 						width: 100px;
 						border-radius: 50%;
@@ -172,6 +179,14 @@ export default {
 
 			.pathways {
 				overflow: auto;
+
+				p.header {
+					margin-left: 15px;
+					margin-bottom : 15px;
+					font-weight: 600;
+					font-size: 20px;
+					color: $primary;
+				}
 
 				.pathway {
 					border-top: 1px solid $lightGrey;
@@ -222,6 +237,12 @@ export default {
 		.pdf-viewer {
 			height: 100%;
 			flex: 1 1 0;
+		}
+
+		.no-pdf {
+			height: 100%;
+			flex: 1 1 0;
+			background :#d0d1db;
 		}
 	}
 
