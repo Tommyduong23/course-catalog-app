@@ -87,7 +87,7 @@ export default new Vuex.Store( {
 					filter.options = [{ value : 'All' }].concat( filter.options );
 				}
 
-				if ( type === 'label-list' ) {
+				if ( type === 'multi-list' ) {
 					filter.options = [{ abv : 'All', value : 'All' }].concat( filter.options );
 				}
 
@@ -110,7 +110,7 @@ export default new Vuex.Store( {
 						obj[key] = filter.options[0].value;
 						break;
 
-					case 'label-list':
+					case 'multi-list':
 						obj[key] = filter.options[0].value;
 						break;
 

@@ -35,7 +35,7 @@
 						.fact(v-for='fact in facts' v-if='fact.value')
 							.content(v-if='fact.type == "boolean"')
 								span.bold {{ fact.label }} course
-							.content(v-if='fact.type == "label-list"')
+							.content(v-if='fact.type == "multi-list"')
 								span.bold {{ fact.label }}:
 								p(v-for='v in fact.value' ) {{ v.value }}
 							.content(v-if='fact.type == "list"')

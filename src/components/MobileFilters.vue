@@ -5,7 +5,7 @@
 			v-for='filter in filters'
 		)
 			.tiles-container(
-				v-if='filter.type == "list" || filter.type == "label-list"'
+				v-if='filter.type == "list" || filter.type == "multi-list"'
 				@click='activeMobileFilter = filter.key'
 				@mouseleave='opened[filter.key] = false'
 			)
@@ -131,7 +131,7 @@ export default {
 						break;
 					}
 
-					case 'label-list': {
+					case 'multi-list': {
 						const defaultVal = filter.options[0].value;
 
 						const payload = {
