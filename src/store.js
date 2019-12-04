@@ -481,34 +481,23 @@ export default new Vuex.Store( {
 			commit( 'updateStore', ['uploadErrorsState', 'loading'] );
 
 			Upload()
-				.then( ( data ) => {
-					console.log( data );
+				.then( () => {
 					commit( 'updateStore', ['uploadErrorsState', 'success'] );
+				} )
+				.catch( ( res ) => {
+					const { status } = res;
+
+					if ( status === 500 ) {
+						commit( 'updateStore', ['uploadErrorsState', 'error'] );
+						return;
+					}
+
+					res.json()
+						.then( ( err ) => {
+							console.log( err );
+							commit( 'uploadFail', err.errors );
+						} );
 				} );
-
-			// Upload()
-			// 	.then( ( data ) => {
-			// 		const { status } = data;
-
-			// 		switch ( status ) {
-			// 			case 202:
-			// 				commit( 'updateStore', ['uploadErrorsState', 'success'] );
-			// 				break;
-			// 			case 400:
-			// 				commit( 'uploadFail', data.errors );
-			// 				break;
-			// 			default:
-			// 				break;
-			// 		}
-
-			// 	} )
-			// 	.catch( ( err ) => {
-
-			// 		// Handle application err
-			// 		commit( 'updateStore', ['uploadErrorsState', 'error'] );
-
-			// 	} );
-
 		},
 
 		closeUpload( { commit } ) {

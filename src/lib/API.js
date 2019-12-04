@@ -51,6 +51,7 @@ const fetchPromise = ( route, options ) => new Promise( ( resolve, reject ) => {
 		fetch( route, options )
 			.then( async ( res ) => {
 				const status = parseInt( res.status, 10 );
+
 				if ( ( Math.floor( status / 100 ) * 100 ) !== 200 ) {
 					reject( res );
 
@@ -79,13 +80,10 @@ const _body = async ( res ) => {
 	return text;
 };
 
-export const Upload = authenticate( _auth => fetch( path( 'sheets/upload' ), {
+export const Upload = authenticate( _auth => fetchPromise( path( 'sheets/upload' ), {
 	method  : 'POST',
 	headers : _auth.defaultHeaders
-} ).then( ( response ) => {
-	console.log( response );
 } ) );
-
 
 export const Search = authenticate( ( _auth, query ) => fetchPromise( path( 'catalog/search', { searchQuery : query } ), {
 	method  : 'GET',
