@@ -51,11 +51,9 @@ export default new Vuex.Store( {
 		modalState : 'browse',
 		modalStep  : 'open',
 		newSector  : {
-			title   : '',
-			url     : '',
-			fileKey : '',
-			logoKey : '',
-			logoUrl : '',
+			title   : null,
+			iconUrl : null,
+			fileUrl : null,
 		},
 		isEditing : false,
 
@@ -192,11 +190,9 @@ export default new Vuex.Store( {
 			state.modalStep  = 'open';
 
 			state.newSector = {
-				title   : '',
-				url     : '',
-				fileKey : '',
-				logoKey : '',
-				logoUrl : '',
+				title   : null,
+				iconUrl : null,
+				fileUrl : null,
 			};
 
 			state.isEditing = false;
