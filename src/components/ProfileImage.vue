@@ -6,7 +6,7 @@
 		.profile(@click='emit( "profile-click" )' v-else)
 			.user
 				p {{ user.displayName }}
-				p.small(@click.stop='emit( "feedback-click" )') give feedback
+				//- p.small(@click.stop='emit( "feedback-click" )') give feedback
 			.picture(:style='{ backgroundImage : `url(${user.photoURL})` }' v-if='user.photoURL')
 			.icon.icon-person(v-else)
 </template>

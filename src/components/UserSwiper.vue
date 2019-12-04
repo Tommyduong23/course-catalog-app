@@ -66,21 +66,21 @@ export default {
 		uid  : null,
 
 		providers : [
-			{
-				name : 'twitter',
-				id   : 'twitter.com',
-				icon : 'twitter.svg',
-			},
+			// {
+			// 	name : 'twitter',
+			// 	id   : 'twitter.com',
+			// 	icon : 'twitter.svg',
+			// },
 			{
 				name : 'google',
 				id   : 'google.com',
 				icon : 'google.svg',
 			},
-			{
-				name : 'facebook',
-				id   : 'facebook.com',
-				icon : 'facebook.svg',
-			},
+			// {
+			// 	name : 'facebook',
+			// 	id   : 'facebook.com',
+			// 	icon : 'facebook.svg',
+			// },
 		],
 
 		standalone : false,
