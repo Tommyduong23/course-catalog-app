@@ -94,8 +94,6 @@ export default {
 		},
 
 		viewPathwayCourses( pathwayName ) {
-			const { filters } = this;
-
 			// const schoolFilter = this.filters.find( ( filter ) => {
 			// 	const { type } = filter;
 

@@ -80,12 +80,18 @@ export default {
 			return this.$store.state.selectedFilters;
 		},
 
-		primaryKey() {
-			return this.$store.state.primaryKey;
+		model() {
+			return this.$store.state.model;
 		},
 
 		activePrimary() {
-			return this.selectedFilters[this.primaryKey];
+			const { model } = this;
+
+			if ( !Object.keys( model ).length ) {
+				return null;
+			}
+
+			return this.selectedFilters[model.primaryFilter];
 		},
 
 		opacity() {

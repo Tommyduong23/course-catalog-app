@@ -173,7 +173,6 @@ export default {
 			width: 100%;
 			height: calc(100vh - 16px );
 			align-items: flex-start;
-			overflow: auto;
 
 			.dropdown-menu {
 				position: relative;
@@ -269,6 +268,8 @@ export default {
 					background-color: white;
 					white-space: nowrap;
 					z-index: 1;
+					max-height: 500px;
+					overflow: auto;
 
 					&.left {
 						left : 0%;

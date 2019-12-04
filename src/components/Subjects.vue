@@ -13,16 +13,14 @@
 			.subject-list.swiper-no-swiping.noselect.easy-scroll(ref='subjectsBar')
 				p.subject(
 					v-for='option in primaryOptions'
-					:class='{ active : option.value == selectedFilters[primaryFilter.name] }'
-					:ref='option.name'
+					:class='{ active : option.value == selectedFilters[primaryFilter.key] }'
+					:ref='option.value'
 					@click='selectOption( option )'
-				) {{ option.name }}
+				) {{ option.value }}
 
 </template>
 
 <script>
-import { ObjToArray } from '@/lib/utils';
-
 export default {
 	name : 'subjects',
 
@@ -44,24 +42,23 @@ export default {
 			return this.$store.state.filters;
 		},
 
-		courseModel() {
-			return this.$store.state.courseModel;
+		model() {
+			return this.$store.state.model;
 		},
 
 		primaryFilter() {
 
-			const { courseModel, filters } = this;
+			const { model, filters } = this;
 
-			const primaryProp = ObjToArray( courseModel ).find( a => a['Primary Filter'] === true );
+			const { primaryFilter } = model;
 
-			if ( !primaryProp ) {
+			if ( !primaryFilter ) {
 				return {};
 			}
 
-			const filter = filters.find( a => a.name === primaryProp.Label )
+			const filter = filters.find( a => a.key === primaryFilter );
 
 			return filter;
-
 		},
 
 		primaryOptions() {
@@ -71,7 +68,7 @@ export default {
 				return [];
 			}
 
-			return [filter.default].concat( filter.options );
+			return filter.options;
 		},
 
 
@@ -88,7 +85,7 @@ export default {
 			const { primaryFilter } = this;
 
 			const payload = {
-				name  : primaryFilter.name,
+				key   : primaryFilter.key,
 				value : option.value
 			};
 

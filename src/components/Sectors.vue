@@ -332,8 +332,11 @@ export default {
 			.logo {
 				margin: 15px;
 				align-self: center;
-				width: 50%;
+				height: 100px;
+				width: 100px;
 				margin-bottom: 30px;
+				border-radius: 50%;
+				overflow: hidden;
 
 				img {
 					width: 100%;

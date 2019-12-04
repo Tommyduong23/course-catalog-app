@@ -85,7 +85,9 @@ export const Upload = authenticate( _auth => fetchPromise( path( 'sheets/upload'
 	headers : _auth.defaultHeaders
 } ) );
 
-export const Search = authenticate( ( _auth, query ) => fetchPromise( path( 'catalog/search', { searchQuery : query } ), {
+export const Search = query => fetchPromise( path( 'catalog/search', { searchQuery : query } ), {
 	method  : 'GET',
-	headers : _auth.defaultHeaders
-} ) );
+	headers : new Headers( {
+		'Content-Type' : 'application/json',
+	} ),
+} );
