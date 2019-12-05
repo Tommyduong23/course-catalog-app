@@ -92,10 +92,9 @@ export default {
 
 		routeTo( route ) {
 
-
 			this.$store.dispatch( 'closeCourseInfo' );
 			this.$store.dispatch( 'closeSectorUpload' );
-			this.$router.push( route );
+			this.$router.push( route ).catch( () => {} );
 
 		},
 

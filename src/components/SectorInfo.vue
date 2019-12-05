@@ -124,6 +124,8 @@ export default {
 					obj[pathwayFilter.key] = pathwayName;
 				}
 
+				obj.fromSectorInfo = true;
+
 				return obj;
 			} )();
 

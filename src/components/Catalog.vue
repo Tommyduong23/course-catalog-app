@@ -42,7 +42,7 @@ export default {
 
 	data : () => ( {
 		maxVisible       : 50,
-		isFiltersFromUrl : false
+		isFiltersFromUrl : false,
 	} ),
 
 	computed : {
@@ -194,7 +194,6 @@ export default {
 			deep      : true,
 			immediate : true,
 			handler( selectedFilters ) {
-
 				if ( !Object.keys( selectedFilters ).length ) {
 					return;
 				}
@@ -202,19 +201,26 @@ export default {
 				if ( !this.isFiltersFromUrl ) {
 					this.loadFiltersFromUrl();
 					this.isFiltersFromUrl = true;
+					return;
 				}
 
 				this.setFiltersToUrl();
+
 			}
-		}
+		},
 	},
 
 	methods : {
 		viewCourse( key ) {
+			const { query } = this.$route;
+
 			this.$router.push( {
 				path  : this.$route.path,
-				query : { key }
-			} );
+				query : {
+					...query,
+					key
+				}
+			} ).catch( () => {} );
 		},
 
 		saveCourse( course ) {
@@ -273,11 +279,22 @@ export default {
 
 			}, {} );
 
+			const { fromSectorInfo } = this.$route.query;
+
+			if ( fromSectorInfo ) {
+				query.fromSectorInfo = fromSectorInfo;
+			}
+
 			this.$router.push( {
 				path : this.$route.path,
 				query,
-			} );
+			} ).catch( () => {} );
+
 		}
+	},
+
+	destroyed() {
+		this.$store.dispatch( 'resetFilters' );
 	},
 
 	components : {

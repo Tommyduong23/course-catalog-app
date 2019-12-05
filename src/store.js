@@ -201,8 +201,11 @@ export default new Vuex.Store( {
 		search( state, results ) {
 			state.searchResults = results;
 			state.courseState   = 'loaded';
-		}
+		},
 
+		resetFilters( state, defaultFilters ) {
+			state.selectedFilters = defaultFilters;
+		}
 
 		/* eslint-enable no-param-reassign */
 	},
@@ -502,6 +505,49 @@ export default new Vuex.Store( {
 
 		closeUpload( { commit } ) {
 			commit( 'closeUpload' );
+		},
+
+		resetFilters( { commit, state } ) {
+			const { filters } = state;
+
+			const defaultFilters = filters.reduce( ( obj, filter ) => {
+				const { key, type } = filter;
+
+				switch ( type ) {
+
+					case 'boolean': {
+						obj[key] = false;
+						break;
+					}
+
+					case 'arbitrary': {
+						obj[key] = false;
+						break;
+					}
+
+					case 'list': {
+						const defaultVal = filter.options[0].value;
+						obj[key] = defaultVal;
+						break;
+					}
+
+					case 'multi-list': {
+						const defaultVal = filter.options[0].value;
+						obj[key] = defaultVal;
+						break;
+					}
+
+					default: {
+						break;
+					}
+				}
+
+				return obj;
+
+			}, {} );
+
+			commit( 'resetFilters', defaultFilters );
+
 		}
 
 	}

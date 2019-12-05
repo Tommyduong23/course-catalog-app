@@ -230,8 +230,13 @@ export default {
 		},
 
 		close() {
+			const { query } = this.$route;
+
+			const { key, ...q } = query;
+
 			this.$router.push( {
-				path : this.$route.path,
+				path  : this.$route.path,
+				query : q,
 			} );
 		},
 
@@ -265,6 +270,8 @@ export default {
 		opacity: 0;
 		transition: opacity 0.2s ease;
 		position: relative;
+		max-height: 800px;
+    overflow: auto;
 
 		.loading-indicator {
 			position: absolute;

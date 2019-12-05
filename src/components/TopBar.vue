@@ -18,10 +18,16 @@
 						.title.mobile(:class='{ active : subjectState === "expanded" }') Subjects
 
 						.title(:class='{ active : state !== "collapsed" }')
-							h2 Course Catalog
+							h2(v-if='!fromSectorInfo') Course Catalog
+							.row(v-else)
+								h2 CTE Pathway
+								p {{ selectedFilters['CTE Pathway'] }}
 
 						.title(:class='{ active : state === "collapsed" }')
-							h2 {{ activePrimary }} courses
+							h2(v-if='!fromSectorInfo') {{ activePrimary }} courses
+							.row(v-else)
+								h2 CTE Pathway
+								p {{ selectedFilters['CTE Pathway'] }}
 
 					profile-image(
 						@profile-click='openUserSwiper'
@@ -100,6 +106,10 @@ export default {
 
 			return ( num / den );
 		},
+
+		fromSectorInfo() {
+			return this.$route.query.fromSectorInfo === 'true';
+		}
 
 	},
 
@@ -239,6 +249,20 @@ export default {
 							font-size: 1em;
 							letter-spacing: 1px;
 							color: $primary;
+						}
+
+						.row {
+							align-items : center;
+
+							p {
+								font-size: 1em;
+								font-weight: 300;
+								color: #2e5491;
+								margin-left: 10px;
+								white-space: nowrap;
+								text-overflow: ellipsis;
+								overflow: hidden;
+							}
 						}
 					}
 				}
