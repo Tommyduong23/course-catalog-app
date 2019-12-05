@@ -13,15 +13,15 @@
 				)
 					h3 {{ route.name }}
 					p {{ route.description }}
-			.btns
-				h1.header quick links
-				.btns-wrapper
-					a.floating-btn(:href='tempURL' target='_blank')
-						p Course Guide
-						.icon-leave
-					a.floating-btn(:href='tempURL' target='_blank')
-						p Graduation Requirements
-						.icon-leave
+			//- .btns
+			//- 	h1.header quick links
+			//- 	.btns-wrapper
+			//- 		a.floating-btn(:href='tempURL' target='_blank')
+			//- 			p Course Guide
+			//- 			.icon-leave
+			//- 		a.floating-btn(:href='tempURL' target='_blank')
+			//- 			p Graduation Requirements
+			//- 			.icon-leave
 		.bottom
 			.button(@click='openUpload') Upload
 </template>

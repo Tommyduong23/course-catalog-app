@@ -40,7 +40,7 @@
 
 
 <script>
-import { Ref } from '@/lib/db';
+import { Ref, firebase } from '@/lib/db';
 
 export default {
 	name : 'sectors',
@@ -92,8 +92,25 @@ export default {
 			Ref.child( 'cte' )
 				.child( schoolKey )
 				.child( sectorKey )
-				.child( 'deleted_at' )
-				.set( Date.now() );
+				.remove();
+
+			console.log( sector );
+
+			if ( sector.fileKey ) {
+				firebase.storage()
+					.ref( '/' )
+					.child( schoolKey )
+					.child( sector.fileKey )
+					.delete();
+			}
+
+			if ( sector.iconKey ) {
+				firebase.storage()
+					.ref( '/' )
+					.child( schoolKey )
+					.child( sector.iconKey )
+					.delete();
+			}
 
 			this.areYouSure = false;
 

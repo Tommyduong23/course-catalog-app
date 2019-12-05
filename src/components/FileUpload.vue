@@ -8,8 +8,8 @@
 			ref='dropzone'
 		)
 			embed.file-preview(
-				v-if='file || preview'
-				:src='fileSrc || preview'
+				v-if='filePreview'
+				:src='filePreview'
 				:type='fileType'
 			)
 			.no-file
@@ -116,6 +116,7 @@ export default {
 				this.dragover = false;
 				this.state    = 'empty';
 				this.error    = null;
+				this.fileSrc  = null;
 
 				const input = document.getElementById( this.id );
 				input.value = null;
@@ -132,6 +133,23 @@ export default {
 			}
 
 			return '';
+		},
+
+		filePreview() {
+			const { fileSrc, preview } = this;
+			if ( !fileSrc && !preview ) {
+				return null;
+			}
+
+			if ( fileSrc ) {
+				return fileSrc;
+			}
+
+			if ( preview ) {
+				return preview;
+			}
+
+			return fileSrc;
 		}
 	},
 

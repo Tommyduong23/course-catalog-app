@@ -17,8 +17,8 @@
 				v-model='newSector.title'
 				:options='titleOptions'
 			)
-			.column
-				.file-input.row
+			.row
+				.file-input
 					p.label {{ isEditing ? 'Edit' : 'Upload' }} PDF
 					file-upload(
 						v-show='isAdmin'
@@ -29,11 +29,11 @@
 						:id='"cte-upload"'
 						:preview='newSector.fileUrl'
 					)
-				.file-input.row
+				.file-input
 					p.label {{ isEditing ? 'Edit' : 'Upload' }} Logo
 					file-upload(
 						v-show='isAdmin'
-						@file='uploadLogo'
+						@file='uploadIcon'
 						:allowed-ext='["png", "jpg", "jpeg"]'
 						:emit-immediately='true'
 						:reset='state == "browse"'
@@ -66,8 +66,9 @@ export default {
 
 	data : () => ( {
 		file           : null,
-		logo           : null,
+		icon           : null,
 		uploadProgress : 0,
+
 	} ),
 
 	computed : {
@@ -144,8 +145,8 @@ export default {
 			this.file = file;
 		},
 
-		uploadLogo( logo ) {
-			this.logo = logo;
+		uploadIcon( icon ) {
+			this.icon = icon;
 		},
 
 		async saveSector() {
@@ -160,17 +161,15 @@ export default {
 			const fileKey   = FirebaseKey();
 			const { file }  = this;
 
-			const logoKey = FirebaseKey();
-			const { logo } = this;
+			const iconKey = FirebaseKey();
+			const { icon } = this;
 
 			const uploadJobAsset = ( asset, key ) => {
-
-				const type = asset.type.split( '/' )[1];
 
 				const upload = firebase.storage()
 					.ref( '/' )
 					.child( schoolKey )
-					.child( `${key}.${type}` )
+					.child( key )
 					.put( asset );
 
 				upload.on( 'state_changed', ( snapshot ) => {
@@ -180,21 +179,37 @@ export default {
 				return upload.then( snapshot => snapshot.ref.getDownloadURL() );
 			};
 
-			let fileUrl = null;
-			let iconUrl = null;
+			let fileUrl  = null;
+			let iconUrl  = null;
+
 
 			if ( file ) {
 				fileUrl = await uploadJobAsset( file, fileKey );
 			}
 
-			if ( logo ) {
-				iconUrl = await uploadJobAsset( logo, logoKey );
+			if ( icon ) {
+				iconUrl = await uploadJobAsset( icon, iconKey );
 			}
 
-			const newSector = Object.assign( {}, this.newSector );
+			const newSector = ( () => {
+				const { title } = this.newSector;
 
-			newSector.iconUrl = iconUrl;
-			newSector.fileUrl = fileUrl;
+				const obj = {
+					title,
+				};
+
+				if ( fileUrl ) {
+					obj.fileUrl = fileUrl;
+					obj.fileKey = fileKey;
+				}
+
+				if ( iconUrl ) {
+					obj.iconUrl = iconUrl;
+					obj.iconKey = iconKey;
+				}
+
+				return obj;
+			} )();
 
 			Ref.child( 'cte' )
 				.child( schoolKey )
@@ -221,17 +236,17 @@ export default {
 
 			let fileUrl = this.newSector.fileUrl || null;
 			let iconUrl = this.newSector.iconUrl || null;
+			const fileKey = this.newSector.fileKey || FirebaseKey();
+			const iconKey = this.newSector.iconKey || FirebaseKey();
 
 			this.$store.dispatch( 'updateStore', ['modalStep', 'uploading'] );
 
 			const uploadJobAsset = ( asset, key ) => {
 
-				const type = asset.type.split( '/' )[1];
-
 				const upload = firebase.storage()
 					.ref( '/' )
 					.child( schoolKey )
-					.child( `${key}.${type}` )
+					.child( key )
 					.put( asset );
 
 				upload.on( 'state_changed', ( snapshot ) => {
@@ -242,19 +257,37 @@ export default {
 			};
 
 			if ( this.file ) {
-				fileUrl = await uploadJobAsset( this.file, this.newSector.fileKey );
+				fileUrl = await uploadJobAsset( this.file, fileKey );
 			}
 
-			if ( this.logo ) {
-				iconUrl = await uploadJobAsset( this.logo, this.newSector.iconUrl );
+			if ( this.icon ) {
+				iconUrl = await uploadJobAsset( this.icon, iconKey );
 			}
 
-			const formattedSector = Object.assign( {}, this.newSector, { iconUrl, fileUrl } );
+			const editedSector = ( () => {
+				const { title } = this.newSector;
+
+				const obj = {
+					title,
+				};
+
+				if ( fileUrl ) {
+					obj.fileUrl = fileUrl;
+					obj.fileKey = fileKey;
+				}
+
+				if ( iconUrl ) {
+					obj.iconUrl = iconUrl;
+					obj.iconKey = iconKey;
+				}
+
+				return obj;
+			} )();
 
 			Ref.child( 'cte' )
 				.child( schoolKey )
 				.child( sectorKey )
-				.set( formattedSector )
+				.update( editedSector )
 				.then( ( ) => {
 					this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
 
@@ -505,27 +538,23 @@ export default {
 				}
 			}
 
-			.column {
+			.row {
 				align-items: center;
 				margin: 10px 0;
 
 				.file-input {
-					width: 100%;
+					display: flex;
+					flex-direction: column;
 					align-items: center;
-					justify-content: space-evenly;
-
-					&:not( :first-of-type ) {
-						margin-top: 15px;
-					}
+					flex: 1 1 0;
 
 					p.label {
 						color: $primary;
 						font-size: 18px;
-						width: 20%;
+						font-weight: 600;
 					}
 
 					.file-upload {
-						width: 70%;
 
 						&.error {
 
