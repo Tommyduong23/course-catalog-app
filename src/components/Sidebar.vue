@@ -1,6 +1,6 @@
 <template lang="pug">
 	#sidebar.noselect(:class='state' v-cloak)
-		.top(:class='{ userIsAdmin }' @scroll='updateOpacity')
+		.top(:class='{ isAdmin }' @scroll='updateOpacity')
 			.logo
 				img(src='/img/logo.png' :style='{ opacity : logoOpacity }')
 				h2 Course Catalog
@@ -23,7 +23,7 @@
 			//- 			p Graduation Requirements
 			//- 			.icon-leave
 		.bottom
-			.button(@click='openUpload') Upload
+			.button(v-if='isAdmin' @click='openUpload') Upload
 </template>
 
 <script>

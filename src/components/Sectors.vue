@@ -94,8 +94,6 @@ export default {
 				.child( sectorKey )
 				.remove();
 
-			console.log( sector );
-
 			if ( sector.fileKey ) {
 				firebase.storage()
 					.ref( '/' )

@@ -108,7 +108,7 @@ export default {
 		},
 
 		fromSectorInfo() {
-			return this.$route.query.fromSectorInfo === 'true';
+			return this.$route.query.fromSectorInfo;
 		}
 
 	},

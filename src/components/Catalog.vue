@@ -191,15 +191,14 @@ export default {
 		},
 
 		'selectedFilters' : {
-			deep      : true,
-			immediate : true,
+			deep : true,
 			handler( selectedFilters ) {
 				if ( !Object.keys( selectedFilters ).length ) {
 					return;
 				}
 
+				// This is to prevent it from firing when the selectedFilters are loaded from the url
 				if ( !this.isFiltersFromUrl ) {
-					this.loadFiltersFromUrl();
 					this.isFiltersFromUrl = true;
 					return;
 				}
@@ -279,18 +278,16 @@ export default {
 
 			}, {} );
 
-			const { fromSectorInfo } = this.$route.query;
-
-			if ( fromSectorInfo ) {
-				query.fromSectorInfo = fromSectorInfo;
-			}
-
 			this.$router.push( {
 				path : this.$route.path,
 				query,
 			} ).catch( () => {} );
 
 		}
+	},
+
+	mounted() {
+		this.loadFiltersFromUrl();
 	},
 
 	destroyed() {

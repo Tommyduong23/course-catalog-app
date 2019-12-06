@@ -655,10 +655,6 @@ export default {
 					}
 				}
 			}
-
-
-
-
 		}
 
     .content-wrapper.sign-in {
@@ -726,6 +722,8 @@ export default {
 
       .name {
         margin-top: 30px;
+				max-width: 100%;
+				padding: 0 30px;
 
         h1,
         p {
