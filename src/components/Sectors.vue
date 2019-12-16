@@ -28,7 +28,7 @@
 				.text add a new sector
 
 		//- shown when there are no sectors
-		p.spacey(v-if='!sectors.length && !loadingSectors') No sectors for {{ activeSchool.name }}
+		p.spacey(v-if='!sectors.length && !loadingSectors') No sectors for {{ activeSchool.value }}
 		.upload-new-sector(
 			v-if='!sectors.length && !loadingSectors && isAdmin'
 			@click='openSectorUpload()'
