@@ -214,7 +214,7 @@ export default {
 			Ref.child( 'cte' )
 				.child( schoolKey )
 				.child( newSector.title )
-				.set( newSector )
+				.update( newSector )
 				.then( () => {
 
 					this.$store.dispatch( 'updateStore', ['modalStep', 'finished'] );
