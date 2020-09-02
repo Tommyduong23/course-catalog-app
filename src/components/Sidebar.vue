@@ -13,15 +13,18 @@
 				)
 					h3 {{ route.name }}
 					p {{ route.description }}
-			//- .btns
-			//- 	h1.header quick links
-			//- 	.btns-wrapper
-			//- 		a.floating-btn(:href='tempURL' target='_blank')
-			//- 			p Course Guide
-			//- 			.icon-leave
-			//- 		a.floating-btn(:href='tempURL' target='_blank')
-			//- 			p Graduation Requirements
-			//- 			.icon-leave
+			.btns
+				h1.header quick links
+				.btns-wrapper
+					a.floating-btn(:href='tempURL' target='_blank')
+						p Course Guide
+						.icon-leave
+					a.floating-btn(:href='tempURL' target='_blank')
+						p Graduation Requirements
+						.icon-leave
+		.translate-container
+			h1.header Change Language
+			#google-translate-element
 		.bottom
 			.button(v-if='isAdmin' @click='openUpload') Upload
 </template>
@@ -125,7 +128,7 @@ export default {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		justify-content: space-between;
+		overflow: auto;
 
 		.handle {
 			display: none;
@@ -137,7 +140,6 @@ export default {
 		}
 
 		.top {
-			overflow: auto;
 			flex: 1 1 0;
 
 			.logo {
@@ -247,15 +249,41 @@ export default {
 					}
 				}
 			}
+
+		}
+
+		.translate-container {
+			h1 {
+				color: white;
+				font-size: 14px;
+				text-transform: uppercase;
+				letter-spacing: 5px;
+				padding: 0 30px;
+				text-align: center;
+			}
+
+			#google-translate-element {
+				background: white;
+				margin: 10px;
+				border-radius: 5px;
+				padding: 10px;
+			}
+
+			select {
+				width: 100%;
+				border: 1px solid $primaryAccent;
+				padding: 5px;
+				border-radius: 5px;
+				color: $primaryAccent;
+				cursor: pointer;
+			}
+
+			a {
+				pointer-events : none;
+			}
 		}
 
 		.bottom {
-			flex: 0 0 auto;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			width: 100%;
-
 			.button {
 				background-color: white;
 				color: $primary;
